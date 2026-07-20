@@ -1,0 +1,276 @@
+# 公开数据 API
+
+paths:
+  /api/public/events:
+    get:
+      tags:
+        - Public
+      summary: 获取活动列表
+      description: 获取已审核通过的活动列表
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 返回数量限制
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: 偏移量（分页用）
+      responses:
+        '200':
+          description: 成功获取活动列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  events:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: "OpenClaw 从安装到落地"
+                        meta:
+                          type: string
+                          example: "AI 活动 · 北京"
+                        desc:
+                          type: string
+                          example: "围绕 AI 工具接入、协作方式和实际落地案例的交流小聚"
+                        image:
+                          type: string
+                          format: uri
+                        link:
+                          type: string
+                          format: uri
+                        event_date:
+                          type: string
+                          format: date
+                        event_location:
+                          type: string
+                        created_at:
+                          type: string
+                          format: date-time
+
+  /api/public/recruits:
+    get:
+      tags:
+        - Public
+      summary: 获取实习实践列表
+      description: 获取已审核通过的实习实践机会列表
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: 返回数量限制
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          description: 偏移量（分页用）
+      responses:
+        '200':
+          description: 成功获取实习实践列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  recruits:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          example: 1
+                        title:
+                          type: string
+                          example: "AI 产品经理实习生"
+                        meta:
+                          type: string
+                          example: "北京 · 京东总部 · 实习 3 个月+"
+                        desc:
+                          type: string
+                          example: "适合对 AI 产品和需求分析有兴趣的同学"
+                        image:
+                          type: string
+                          format: uri
+                        link:
+                          type: string
+                          format: uri
+                        opportunity_type:
+                          type: string
+                          enum: ["internship", "volunteer", "project"]
+                        created_at:
+                          type: string
+                          format: date-time
+
+  /api/public/categories:
+    get:
+      tags:
+        - Public
+      summary: 获取联盟权益分类
+      description: 获取联盟权益分类列表
+      responses:
+        '200':
+          description: 成功获取分类列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        slug:
+                          type: string
+                          example: "food-fun"
+                        title:
+                          type: string
+                          example: "吃喝玩乐"
+                        desc:
+                          type: string
+                          example: "餐饮折扣、青年社交与线下聚会资源"
+                        image:
+                          type: string
+                          format: uri
+                        items:
+                          type: array
+                          items:
+                            type: string
+
+  /api/public/directory:
+    get:
+      tags:
+        - Public
+      summary: 获取生态对接名录
+      description: 获取生态对接名录列表
+      parameters:
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: ["campus", "government", "company"]
+          description: 名录类型筛选
+      responses:
+        '200':
+          description: 成功获取名录列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  directory:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        name:
+                          type: string
+                        type:
+                          type: string
+                          enum: ["campus", "government", "company"]
+                        description:
+                          type: string
+                        website:
+                          type: string
+                          format: uri
+                        contact:
+                          type: string
+
+  /api/public/hero-carousel:
+    get:
+      tags:
+        - Public
+      summary: 获取首页轮播图
+      description: 获取首页轮播图数据
+      responses:
+        '200':
+          description: 成功获取轮播图
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  carousel:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                        title:
+                          type: string
+                        subtitle:
+                          type: string
+                        image:
+                          type: string
+                          format: uri
+                        link:
+                          type: string
+                          format: uri
+
+  /api/health:
+    get:
+      tags:
+        - Public
+      summary: 健康检查
+      description: 检查服务是否正常运行
+      responses:
+        '200':
+          description: 服务正常
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  status:
+                    type: string
+                    example: "ok"
+                  timestamp:
+                    type: string
+                    format: date-time
+                  database:
+                    type: boolean
+                    example: true
+                    description: 数据库连接状态

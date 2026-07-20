@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>邮箱验证 | 北京校园生态合作联盟</title>
+  <meta name="description" content="验证您的邮箱地址。">
+  <meta property="og:title" content="邮箱验证 | 北京校园生态合作联盟">
+  <meta property="og:description" content="验证您的邮箱地址。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #091a33;
+      --text: #e6f0ff;
+      --muted: #9fb3d0;
+      --accent: #60a5fa;
+      --accent-2: #8b5cf6;
+      --panel: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.12);
+    }
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(96,165,250,0.18), transparent),
+                  radial-gradient(900px 600px at -10% 60%, rgba(139,92,246,0.15), transparent),
+                  var(--bg);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 40px 32px;
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+    .auth-header {
+      margin-bottom: 32px;
+    }
+    .auth-header h1 {
+      font-size: 26px;
+      margin: 0 0 8px;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .auth-header p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+    .status-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    .status-icon.loading { animation: spin 1s linear infinite; }
+    .status-icon.success { color: #4ade80; }
+    .status-icon.error { color: #fca5a5; }
+    .status-text {
+      font-size: 16px;
+      color: var(--text);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    .btn-primary {
+      display: inline-block;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(96,165,250,0.35);
+    }
+    .auth-footer {
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .auth-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @media (max-width: 480px) {
+      .auth-card { padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>邮箱验证</h1>
+      </div>
+
+      <div class="status-icon loading" id="statusIcon">⏳</div>
+      <div class="status-text" id="statusText">正在验证您的邮箱...</div>
+
+      <div id="actionArea" style="display: none;">
+        <a href="login.html" class="btn-primary" id="loginBtn">去登录</a>
+      </div>
+
+      <div class="auth-footer">
+        <a href="index.html">返回首页</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const IS_FILE_MODE = window.location.protocol === 'file:';
+      const API_BASE = IS_FILE_MODE ? 'http://localhost:3000/api' : '/api';
+      const LOGIN_PAGE = IS_FILE_MODE ? 'login.html' : '/login.html';
+
+      document.getElementById('loginBtn').href = LOGIN_PAGE;
+
+      // 获取 token
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+
+      if (!token) {
+        showError('验证链接无效，缺少验证令牌');
+        return;
+      }
+
+      // 验证邮箱
+      fetch(`${API_BASE}/auth/verify-email?token=${encodeURIComponent(token)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            showSuccess(data.alreadyVerified 
+              ? '您的邮箱已经验证过了' 
+              : '邮箱验证成功！您现在可以登录了');
+          } else {
+            showError(data.message || '验证失败');
+          }
+        })
+        .catch(err => {
+          console.error('Verification error:', err);
+          showError('网络错误，请稍后重试');
+        });
+
+      function showSuccess(message) {
+        const icon = document.getElementById('statusIcon');
+        const text = document.getElementById('statusText');
+        const action = document.getElementById('actionArea');
+
+        icon.textContent = '✓';
+        icon.className = 'status-icon success';
+        text.textContent = message;
+        action.style.display = 'block';
+      }
+
+      function showError(message) {
+        const icon = document.getElementById('statusIcon');
+        const text = document.getElementById('statusText');
+
+        icon.textContent = '✗';
+        icon.className = 'status-icon error';
+        text.textContent = message;
+      }
+    })();
+  </script>
+  <script>
+    (function loadVerifyAuthScript() {
+      const script = document.createElement("script");
+      script.defer = true;
+      script.src = window.location.protocol === "file:" ? "public/assets/nav-auth.js" : "/assets/nav-auth.js";
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>

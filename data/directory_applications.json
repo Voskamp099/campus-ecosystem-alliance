@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "directory_type": "campus",
+    "target_title": "北京大学学生创新中心",
+    "target_meta": "校园方 · 创新实践",
+    "applicant_name": "测试用户",
+    "applicant_org": "1",
+    "applicant_role": "1",
+    "phone": "13800138000",
+    "wechat": "",
+    "email": "redacted@example.com",
+    "cooperation_intent": "1",
+    "message": "1",
+    "status": "pending",
+    "created_at": "2026-04-19T11:10:53.882Z",
+    "updated_at": "2026-04-19T11:10:53.882Z"
+  }
+]

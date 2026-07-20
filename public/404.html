@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>页面未找到 | 北京校园生态合作联盟</title>
+  <meta name="theme-color" content="#091a33">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;800&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #091a33;
+      --text: #eff6ff;
+      --text-soft: rgba(239,246,255,0.72);
+      --text-muted: rgba(191,219,254,0.5);
+      --brand: #60a5fa;
+      --brand-strong: #2563eb;
+      --radius: 24px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Noto Sans SC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(251, 191, 36, 0.08), transparent 26%),
+        linear-gradient(180deg, #071425 0%, #091a33 42%, #081624 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+    }
+
+    /* Nav placeholder */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: "Noto Serif SC", serif;
+      font-weight: 900;
+      font-size: 18px;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-soft);
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--brand); }
+
+    .page {
+      text-align: center;
+      max-width: 560px;
+    }
+
+    .error-code {
+      font-family: "Noto Serif SC", serif;
+      font-weight: 900;
+      font-size: clamp(96px, 20vw, 160px);
+      line-height: 1;
+      background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+      letter-spacing: -4px;
+    }
+
+    .error-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text);
+    }
+
+    .error-desc {
+      font-size: 16px;
+      color: var(--text-soft);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+    }
+    .btn-primary:hover { box-shadow: 0 12px 32px rgba(37, 99, 235, 0.5); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.07);
+      color: var(--text);
+      border: 1px solid rgba(147,197,253,0.2);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.1); }
+
+    /* Canvas star field */
+    canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .page { position: relative; z-index: 1; }
+
+    @media (max-width: 600px) {
+      nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+      .error-code { letter-spacing: -2px; }
+      .actions { flex-direction: column; align-items: stretch; }
+      .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+
+<nav>
+  <a class="nav-logo" href="/">北京校园生态合作联盟</a>
+  <ul class="nav-links">
+    <li><a href="/">首页</a></li>
+    <li><a href="/categories.html">权益中心</a></li>
+    <li><a href="/directory.html">生态名录</a></li>
+    <li><a href="/directory-apply.html">发起对接</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+  <div class="error-code">404</div>
+  <h1 class="error-title">页面不存在</h1>
+  <p class="error-desc">
+    你访问的页面可能已被移除、地址变更，<br>
+    或者根本不存在这个页面。
+  </p>
+  <div class="actions">
+    <a class="btn btn-primary" href="/">返回首页</a>
+    <a class="btn btn-ghost" href="/directory-apply.html">发起对接 →</a>
+  </div>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById("bg");
+  const ctx = canvas.getContext("2d");
+  let stars = [];
+  function resize() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    stars = Array.from({ length: 80 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.5 + 0.3,
+      speed: Math.random() * 0.2 + 0.06,
+      alpha: Math.random() * 0.4 + 0.15
+    }));
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    stars.forEach(s => {
+      s.y -= s.speed;
+      if (s.y < -8) { s.y = canvas.height + 8; s.x = Math.random() * canvas.width; }
+      ctx.globalAlpha = s.alpha;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = "#93c5fd";
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(draw);
+  }
+  resize();
+  window.addEventListener("resize", resize);
+  draw();
+})();
+</script>
+</body>
+</html>

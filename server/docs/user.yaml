@@ -1,0 +1,225 @@
+# 用户相关 API
+
+paths:
+  /api/user/profile:
+    get:
+      tags:
+        - User
+      summary: 获取用户信息
+      description: 获取当前登录用户的详细信息
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功获取用户信息
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - User
+      summary: 更新用户资料
+      description: 更新当前用户的个人资料
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nickname:
+                  type: string
+                  minLength: 2
+                  maxLength: 30
+                  example: "张三"
+                bio:
+                  type: string
+                  maxLength: 500
+                  example: "热爱学习的大学生"
+                phone:
+                  type: string
+                  pattern: '^1[3-9]\d{9}$'
+                  example: "13800138000"
+                org_name:
+                  type: string
+                  example: "北京大学"
+                org_role:
+                  type: string
+                  example: "学生"
+      responses:
+        '200':
+          description: 资料更新成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/user/avatar:
+    post:
+      tags:
+        - User
+      summary: 上传头像
+      description: 上传并更新用户头像
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - avatar
+              properties:
+                avatar:
+                  type: string
+                  format: binary
+                  description: 头像图片文件（支持 jpg/png/gif，最大 5MB）
+      responses:
+        '200':
+          description: 头像上传成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  avatar_url:
+                    type: string
+                    format: uri
+                    example: "https://example.com/avatars/1-1234567890-abc123.jpg"
+                  message:
+                    type: string
+                    example: "头像更新成功"
+        '400':
+          description: 文件格式或大小不符合要求
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/user-center/applications:
+    get:
+      tags:
+        - User
+      summary: 获取用户的生态对接申请
+      description: 获取当前用户提交的所有生态对接申请记录
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功获取申请列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  applications:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DirectoryApplication'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/user-center/registrations:
+    get:
+      tags:
+        - User
+      summary: 获取用户的活动报名
+      description: 获取当前用户的所有活动报名记录
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功获取报名列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  registrations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ActivityRegistration'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/user-center/deliveries:
+    get:
+      tags:
+        - User
+      summary: 获取用户的投递记录
+      description: 获取当前用户的所有投递记录
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 成功获取投递列表
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  deliveries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeliveryRecord'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

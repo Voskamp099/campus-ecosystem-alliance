@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>生态对接名录 | 北京校园生态合作联盟</title>
+  <meta name="description" content="北京校园生态合作联盟生态对接名录，按校园方、政府方、企业方统一浏览与搜索。">
+  <meta property="og:title" content="生态对接名录 | 北京校园生态合作联盟">
+  <meta property="og:description" content="高校、企业、政府三大类生态伙伴一览，快速找到合作方向并发起对接。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#091a33">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #091a33;
+      --panel: rgba(11, 27, 52, 0.8);
+      --line: rgba(130, 175, 255, 0.18);
+      --text: #eff6ff;
+      --text-soft: rgba(239,246,255,0.74);
+      --text-muted: rgba(191,219,254,0.54);
+      --brand: #60a5fa;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.28);
+      --radius: 24px;
+      --container: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Noto Sans SC", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(37, 99, 235, 0.22), transparent 30%),
+        radial-gradient(circle at top right, rgba(251, 191, 36, 0.08), transparent 26%),
+        linear-gradient(180deg, #071425 0%, #091a33 42%, #081624 100%);
+    }
+
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    .container {
+      width: min(var(--container), calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: 110px 0 42px;
+    }
+
+    .hero-shell {
+      padding: 34px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(147,197,253,0.16);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--text-soft);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      margin: 0 0 12px;
+      font-family: "Noto Serif SC", serif;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.12;
+    }
+
+    .hero-desc {
+      margin: 0;
+      max-width: 760px;
+      color: var(--text-soft);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 54px;
+      padding: 0 18px 0 50px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-note {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 14px;
+      font-weight: 700;
+      min-height: 54px;
+      white-space: nowrap;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0 0 14px;
+      margin: 0;
+      list-style: none;
+    }
+
+    .tab-btn {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-soft);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(37,99,235,0.92), rgba(96,165,250,0.82));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 24px rgba(37,99,235,0.28);
+    }
+
+    .section {
+      padding: 0 0 86px;
+    }
+
+    .list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .item-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 22px;
+      align-items: center;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(147,197,253,0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .item-thumb,
+    .item-thumb-placeholder {
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(147,197,253,0.18);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-thumb-placeholder {
+      display: grid;
+      place-items: center;
+      color: var(--brand);
+      font-size: 28px;
+      font-weight: 800;
+      font-family: "Noto Serif SC", serif;
+    }
+
+    .item-title {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .item-tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(147,197,253,0.14);
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .item-desc {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .item-side {
+      display: grid;
+      justify-items: end;
+      gap: 12px;
+      min-width: 168px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 132px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(37,99,235,0.28);
+    }
+
+    .mini-note {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: right;
+      word-break: break-all;
+    }
+
+    .empty {
+      padding: 32px 28px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.04);
+      border: 1px dashed rgba(147,197,253,0.18);
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .item-card {
+        grid-template-columns: 1fr;
+      }
+
+      .item-side {
+        justify-items: start;
+      }
+
+      .mini-note {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="hero-shell">
+          <div class="hero-top">
+            <a class="back-link" href="index.html">返回首页</a>
+            <a class="back-link" href="https://docs.qq.com/form/page/DSkNRbkhIQXBaTFVN" target="_blank" rel="noopener">加入我们</a>
+          </div>
+
+          <span class="hero-tag">Directory</span>
+          <h1 class="hero-title">生态对接名录</h1>
+          <p class="hero-desc">你可以在这里按校园方、政府方、企业方切换，也可以直接搜索单位名称、合作方向、时间、地点或关键词。</p>
+
+          <div class="toolbar">
+            <div class="search-wrap">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              <input class="search-input" id="directorySearch" type="text" placeholder="搜索单位名称、合作方向、时间、地点或关键词">
+            </div>
+            <div class="search-note" id="resultCount">当前展示 0 条内容</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="tabs" id="directoryTabs"></div>
+        <div class="list" id="directoryList"></div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function loadDirectoryScript() {
+      const script = document.createElement("script");
+      script.defer = true;
+      script.src = window.location.protocol === "file:" ? "public/assets/directory-hub.js" : "/assets/directory-hub.js";
+      document.body.appendChild(script);
+    })();
+  </script>
+<script>
+  (function loadDirectoryAuthScript() {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = window.location.protocol === "file:" ? "public/assets/nav-auth.js" : "/assets/nav-auth.js";
+    document.body.appendChild(script);
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登录 | 北京校园生态合作联盟</title>
+  <meta name="description" content="登录北京校园生态合作联盟账号，查看您的申请和报名状态。">
+  <meta property="og:title" content="登录 | 北京校园生态合作联盟">
+  <meta property="og:description" content="登录北京校园生态合作联盟账号，查看您的申请和报名状态。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #091a33;
+      --text: #e6f0ff;
+      --muted: #9fb3d0;
+      --accent: #60a5fa;
+      --accent-2: #8b5cf6;
+      --panel: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.12);
+    }
+    .auth-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(96,165,250,0.18), transparent),
+                  radial-gradient(900px 600px at -10% 60%, rgba(139,92,246,0.15), transparent),
+                  var(--bg);
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 40px 32px;
+      backdrop-filter: blur(8px);
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .auth-header h1 {
+      font-size: 26px;
+      margin: 0 0 8px;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .auth-header p {
+      color: var(--muted);
+      margin: 0;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-size: 15px;
+      transition: all 0.2s;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+    }
+    .form-group input::placeholder {
+      color: rgba(159,179,208,0.5);
+    }
+    .input-wrapper {
+      position: relative;
+    }
+    .input-wrapper input {
+      padding-right: 44px;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 18px;
+    }
+    .toggle-password:hover {
+      color: var(--text);
+    }
+    .input-error {
+      border-color: #ef4444 !important;
+    }
+    .error-message {
+      color: #fca5a5;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+    .error-message.show {
+      display: block;
+    }
+    .form-options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      font-size: 13px;
+    }
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      cursor: pointer;
+    }
+    .remember-me input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+    .forgot-link {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: white;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(96,165,250,0.35);
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .auth-footer {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .auth-footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+    .notice {
+      padding: 12px 16px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+    .notice.error {
+      display: block;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.3);
+      color: #fca5a5;
+    }
+    .notice.success {
+      display: block;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #86efac;
+    }
+    .back-link {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+    }
+    @media (max-width: 480px) {
+      .auth-card {
+        padding: 32px 24px;
+      }
+      .back-link {
+        position: static;
+        margin-bottom: 16px;
+        display: inline-flex;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-link" id="backHomeLink">← 返回首页</a>
+  
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1>欢迎回来</h1>
+        <p>登录您的联盟账号</p>
+      </div>
+
+      <div class="notice" id="notice"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">账号</label>
+          <input type="text" id="email" name="email" placeholder="请输入邮箱或管理员账号" required>
+          <div class="error-message" id="emailError"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">密码</label>
+          <div class="input-wrapper">
+            <input type="password" id="password" name="password" placeholder="请输入密码" required>
+            <button type="button" class="toggle-password" id="togglePassword" title="显示/隐藏密码">👁</button>
+          </div>
+          <div class="error-message" id="passwordError"></div>
+        </div>
+
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" id="rememberMe" checked>
+            <span>记住我</span>
+          </label>
+          <a href="forgot-password.html" class="forgot-link" id="forgotPasswordLink">忘记密码？</a>
+        </div>
+
+        <button type="submit" class="btn-primary" id="submitBtn">登录</button>
+      </form>
+
+      <div class="auth-footer">
+        还没有账号？<a href="register.html" id="registerLink">立即注册</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const IS_FILE_MODE = window.location.protocol === 'file:';
+      const API_BASE = IS_FILE_MODE ? 'http://localhost:3000/api' : '/api';
+      const MY_PAGE = IS_FILE_MODE ? 'my.html' : '/my.html';
+      const HOME_PAGE = IS_FILE_MODE ? 'index.html' : '/';
+      const REGISTER_PAGE = IS_FILE_MODE ? 'register.html' : '/register.html';
+      const FORGOT_PASSWORD_PAGE = IS_FILE_MODE ? 'forgot-password.html' : '/forgot-password.html';
+      const LOCAL_TEST_ACCOUNT = {
+        email: 'test@alliance.local',
+        password: '123456',
+        user: {
+          id: 10001,
+          userId: 10001,
+          email: 'test@alliance.local',
+          nickname: '测试用户',
+          real_name: '测试用户',
+          org_name: '北京校园生态合作联盟',
+          org_role: '测试账号',
+          isAdmin: false,
+          created_at: new Date().toISOString()
+        }
+      };
+      const LOCAL_SUPER_ADMIN = {
+        email: 'gly',
+        password: '123456',
+        user: {
+          id: 90001,
+          userId: 90001,
+          email: 'gly@alliance.local',
+          nickname: 'gly',
+          real_name: '超级管理员',
+          org_name: '北京校园生态合作联盟',
+          org_role: '超级管理员',
+          isAdmin: true,
+          created_at: new Date().toISOString()
+        }
+      };
+
+      document.getElementById('backHomeLink').href = HOME_PAGE;
+      document.getElementById('registerLink').href = REGISTER_PAGE;
+      document.getElementById('forgotPasswordLink').href = FORGOT_PASSWORD_PAGE;
+
+      let csrfToken = '';
+      async function ensureCsrfToken() {
+        if (IS_FILE_MODE) return '';
+        if (csrfToken) return csrfToken;
+        const res = await fetch(`${API_BASE}/csrf-token`, { method: 'GET' });
+        const data = await res.json();
+        csrfToken = data && data.success ? (data.csrfToken || '') : '';
+        return csrfToken;
+      }
+      
+      // 检查是否已登录
+      const token = localStorage.getItem('alliance_token');
+      if (token) {
+        if (IS_FILE_MODE) {
+          window.location.href = MY_PAGE;
+          return;
+        }
+        // 验证 token 是否有效
+        fetch(`${API_BASE}/auth/me`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            // 已登录，跳转到用户中心
+            window.location.href = MY_PAGE;
+          }
+        })
+        .catch(() => {
+          // token 无效，清除
+          localStorage.removeItem('alliance_token');
+          localStorage.removeItem('alliance_user');
+        });
+      }
+
+      // 自动填充记住的邮箱
+      const rememberedEmail = localStorage.getItem('rememberedEmail');
+      if (rememberedEmail) {
+        document.getElementById('email').value = rememberedEmail;
+      }
+
+      // 密码显示/隐藏
+      const togglePassword = document.getElementById('togglePassword');
+      const passwordInput = document.getElementById('password');
+      let passwordVisible = false;
+
+      togglePassword.addEventListener('click', function() {
+        passwordVisible = !passwordVisible;
+        passwordInput.type = passwordVisible ? 'text' : 'password';
+        togglePassword.textContent = passwordVisible ? '🙈' : '👁';
+      });
+
+      // 实时验证
+      const emailInput = document.getElementById('email');
+      const emailError = document.getElementById('emailError');
+      const passwordError = document.getElementById('passwordError');
+
+      function validateEmail() {
+        const value = emailInput.value.trim();
+        if (!value) {
+          emailInput.classList.add('input-error');
+          emailError.textContent = '请输入账号';
+          emailError.classList.add('show');
+          return false;
+        }
+        emailInput.classList.remove('input-error');
+        emailError.classList.remove('show');
+        return true;
+      }
+
+      function validatePassword() {
+        const value = passwordInput.value;
+        if (!value) {
+          passwordInput.classList.add('input-error');
+          passwordError.textContent = '请输入密码';
+          passwordError.classList.add('show');
+          return false;
+        }
+        if (value.length < 6) {
+          passwordInput.classList.add('input-error');
+          passwordError.textContent = '密码长度至少 6 位';
+          passwordError.classList.add('show');
+          return false;
+        }
+        passwordInput.classList.remove('input-error');
+        passwordError.classList.remove('show');
+        return true;
+      }
+
+      emailInput.addEventListener('blur', validateEmail);
+      passwordInput.addEventListener('blur', validatePassword);
+
+      document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // 验证
+        const isEmailValid = validateEmail();
+        const isPasswordValid = validatePassword();
+        
+        if (!isEmailValid || !isPasswordValid) {
+          return;
+        }
+        
+        const submitBtn = document.getElementById('submitBtn');
+        const notice = document.getElementById('notice');
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        const rememberMe = document.getElementById('rememberMe').checked;
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '登录中...';
+        notice.className = 'notice';
+
+        try {
+          if (IS_FILE_MODE) {
+            if (email === LOCAL_SUPER_ADMIN.email && password === LOCAL_SUPER_ADMIN.password) {
+              localStorage.setItem('alliance_token', 'local-admin-token');
+              localStorage.setItem('alliance_user', JSON.stringify(LOCAL_SUPER_ADMIN.user));
+
+              if (rememberMe) {
+                localStorage.setItem('rememberedEmail', email);
+              } else {
+                localStorage.removeItem('rememberedEmail');
+              }
+
+              notice.className = 'notice success';
+              notice.textContent = '超级管理员登录成功，正在跳转...';
+              setTimeout(() => {
+                window.location.href = MY_PAGE;
+              }, 300);
+              return;
+            }
+
+            if (email === LOCAL_TEST_ACCOUNT.email && password === LOCAL_TEST_ACCOUNT.password) {
+              localStorage.setItem('alliance_token', 'local-user-token');
+              localStorage.setItem('alliance_user', JSON.stringify(LOCAL_TEST_ACCOUNT.user));
+
+              if (rememberMe) {
+                localStorage.setItem('rememberedEmail', email);
+              } else {
+                localStorage.removeItem('rememberedEmail');
+              }
+
+              notice.className = 'notice success';
+              notice.textContent = '登录成功，正在跳转...';
+              setTimeout(() => {
+                window.location.href = MY_PAGE;
+              }, 300);
+              return;
+            }
+
+            notice.className = 'notice error';
+            notice.textContent = '本地可用账号：gly / 123456（超级管理员）或 test@alliance.local / 123456';
+            return;
+          }
+
+          const res = await fetch(`${API_BASE}/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': await ensureCsrfToken()
+            },
+            body: JSON.stringify({ email, password })
+          });
+          
+          const data = await res.json();
+          
+          if (data.success) {
+            // 保存登录状态
+            localStorage.setItem('alliance_token', data.token);
+            localStorage.setItem('alliance_user', JSON.stringify(data.user));
+            
+            // 记住邮箱
+            if (rememberMe) {
+              localStorage.setItem('rememberedEmail', email);
+            } else {
+              localStorage.removeItem('rememberedEmail');
+            }
+
+            notice.className = 'notice success';
+            notice.textContent = '登录成功，正在跳转...';
+            
+            setTimeout(() => {
+              window.location.href = MY_PAGE;
+            }, 500);
+          } else {
+            notice.className = 'notice error';
+            notice.textContent = data.message || '登录失败';
+          }
+        } catch (err) {
+          notice.className = 'notice error';
+          notice.textContent = '网络错误，请稍后重试';
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = '登录';
+        }
+      });
+    })();
+  </script>
+<script>
+  (function loadNavAuth() {
+    if (window.AllianceBootstrap && window.AllianceBootstrap.loadScript) {
+      window.AllianceBootstrap.loadScript("assets/nav-auth.js?v=202604201933");
+      return;
+    }
+    var script = document.createElement("script");
+    script.src = window.location.protocol === "file:"
+      ? "public/assets/nav-auth.js?v=202604201933"
+      : "/assets/nav-auth.js?v=202604201933";
+    document.body.appendChild(script);
+  })();
+</script>
+</body>
+</html>

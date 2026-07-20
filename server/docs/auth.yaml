@@ -1,0 +1,319 @@
+# 认证相关 API
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: 用户注册
+      description: 创建新用户账号，可选择发送验证邮件
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                password:
+                  type: string
+                  minLength: 6
+                  example: "123456"
+                nickname:
+                  type: string
+                  example: "张三"
+                phone:
+                  type: string
+                  example: "13800138000"
+                realName:
+                  type: string
+                  example: "张三"
+                orgName:
+                  type: string
+                  example: "北京大学"
+                orgRole:
+                  type: string
+                  example: "学生"
+      responses:
+        '200':
+          description: 注册成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "注册成功，验证邮件已发送到您的邮箱"
+                  token:
+                    type: string
+                    description: JWT 令牌
+                  user:
+                    $ref: '#/components/schemas/User'
+                  emailVerificationRequired:
+                    type: boolean
+                    example: true
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 请求过于频繁
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: 用户登录
+      description: 使用邮箱/账号和密码登录，返回 JWT 令牌
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+                - password
+              properties:
+                identifier:
+                  type: string
+                  description: 邮箱或管理员账号
+                  example: "user@example.com"
+                password:
+                  type: string
+                  example: "123456"
+      responses:
+        '200':
+          description: 登录成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "登录成功"
+                  token:
+                    type: string
+                    description: JWT 令牌
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: 邮箱或密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: 登录失败次数过多，请稍后再试
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/verify-email:
+    get:
+      tags:
+        - Auth
+      summary: 验证邮箱
+      description: 通过邮件中的验证令牌验证邮箱地址
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+          description: 邮件中的验证令牌
+      responses:
+        '200':
+          description: 验证成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "邮箱验证成功"
+                  alreadyVerified:
+                    type: boolean
+                    example: false
+        '400':
+          description: 验证令牌无效或已过期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/forgot-password:
+    post:
+      tags:
+        - Auth
+      summary: 忘记密码
+      description: 发送密码重置邮件到用户邮箱
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "user@example.com"
+      responses:
+        '200':
+          description: 邮件已发送（无论邮箱是否存在都返回相同提示）
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "如果该邮箱已注册，我们将发送密码重置链接"
+
+  /api/auth/reset-password:
+    post:
+      tags:
+        - Auth
+      summary: 重置密码
+      description: 使用邮件中的重置令牌设置新密码
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - newPassword
+              properties:
+                token:
+                  type: string
+                  description: 邮件中的重置令牌
+                newPassword:
+                  type: string
+                  minLength: 6
+                  example: "newpassword123"
+      responses:
+        '200':
+          description: 密码重置成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "密码重置成功，请使用新密码登录"
+        '400':
+          description: 重置令牌无效或已过期
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/change-password:
+    post:
+      tags:
+        - Auth
+      summary: 修改密码
+      description: 已登录用户修改密码
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - oldPassword
+                - newPassword
+              properties:
+                oldPassword:
+                  type: string
+                  example: "123456"
+                newPassword:
+                  type: string
+                  minLength: 6
+                  example: "newpassword123"
+      responses:
+        '200':
+          description: 密码修改成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: 原密码错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/auth/resend-verification:
+    post:
+      tags:
+        - Auth
+      summary: 重发验证邮件
+      description: 重新发送邮箱验证邮件
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: 验证邮件已发送
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '400':
+          description: 邮箱已验证或邮件服务未配置
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: 未授权
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'

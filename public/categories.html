@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联盟权益中心 | 北京校园生态合作联盟</title>
+  <meta name="description" content="北京校园生态合作联盟权益中心，按权益分类、实习实践与近期活动统一查看内容。">
+  <meta property="og:title" content="联盟权益中心 | 北京校园生态合作联盟">
+  <meta property="og:description" content="吃喝玩乐、衣食住行、学习提升、就业创业 — 联盟权益一站式查看。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#091a33">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    .hero {
+      padding: 110px 0 42px;
+    }
+
+    .hero-shell {
+      padding: 34px;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.04));
+      border: 1px solid rgba(147,197,253,0.16);
+      box-shadow: var(--shadow);
+    }
+
+    .hero-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--text-soft);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .hero-title {
+      margin: 0 0 12px;
+      font-family: "Noto Serif SC", serif;
+      font-size: clamp(30px, 4vw, 48px);
+      line-height: 1.12;
+    }
+
+    .hero-desc {
+      margin: 0;
+      max-width: 760px;
+      color: var(--text-soft);
+      font-size: 16px;
+      line-height: 1.8;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      height: 54px;
+      padding: 0 18px 0 50px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-note {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 14px;
+      font-weight: 700;
+      min-height: 54px;
+      white-space: nowrap;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 220px));
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .filter-select {
+      width: 100%;
+      height: 48px;
+      padding: 0 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 0 0 14px;
+      margin: 0;
+      list-style: none;
+    }
+
+    .tab-btn {
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-soft);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(37,99,235,0.92), rgba(96,165,250,0.82));
+      color: #fff;
+      border-color: transparent;
+      box-shadow: 0 12px 24px rgba(37,99,235,0.28);
+    }
+
+    .section {
+      padding: 0 0 86px;
+    }
+
+    .list {
+      display: grid;
+      gap: 16px;
+    }
+
+    .item-card {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 22px;
+      align-items: center;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(147,197,253,0.14);
+      box-shadow: var(--shadow);
+    }
+
+    .item-thumb,
+    .item-thumb-placeholder {
+      width: 92px;
+      height: 92px;
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid rgba(147,197,253,0.18);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .item-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-thumb-placeholder {
+      display: grid;
+      place-items: center;
+      color: var(--brand);
+      font-size: 28px;
+      font-weight: 800;
+      font-family: "Noto Serif SC", serif;
+    }
+
+    .item-title {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0 0 12px;
+    }
+
+    .item-tag {
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(147,197,253,0.14);
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .item-desc {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .item-side {
+      display: grid;
+      justify-items: end;
+      gap: 10px;
+      min-width: 170px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-width: 150px;
+      padding: 12px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(147,197,253,0.2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(37,99,235,0.34);
+      border-color: transparent;
+    }
+
+    .mini-note {
+      color: var(--text-muted);
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.7;
+    }
+
+    .empty {
+      padding: 34px 24px;
+      border-radius: 24px;
+      border: 1px dashed rgba(147,197,253,0.18);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-row {
+        grid-template-columns: 1fr;
+      }
+
+      .item-card {
+        grid-template-columns: 1fr;
+      }
+
+      .item-side {
+        justify-items: start;
+        min-width: 0;
+      }
+
+      .mini-note {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="container">
+      <section class="hero-shell">
+        <div class="hero-top">
+          <a class="back-link" href="index.html">返回首页</a>
+          <a class="back-link" href="https://docs.qq.com/form/page/DSkNRbkhIQXBaTFVN" target="_blank" rel="noopener">加入我们</a>
+        </div>
+
+        <div class="hero-tag">Resource Hub</div>
+        <h1 class="hero-title">联盟权益中心</h1>
+        <p class="hero-desc">你可以在这里按分类切换，也可以直接搜索活动名称、时间、地点或关键词。</p>
+
+        <div class="toolbar">
+          <div class="search-wrap">
+            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+            <input class="search-input" id="resourceSearch" type="text" placeholder="搜索活动名称、时间、地点或相关关键词">
+          </div>
+          <div class="search-note" id="resultCount">当前展示 0 条内容</div>
+        </div>
+
+        <div class="filter-row">
+          <select class="filter-select" id="typeFilter" aria-label="按内容类型筛选">
+            <option value="all">全部类型</option>
+            <option value="resource">资源权益</option>
+            <option value="practice">实习实践</option>
+            <option value="event">近期活动</option>
+          </select>
+          <select class="filter-select" id="timeFilter" aria-label="按时间状态筛选">
+            <option value="all">全部时间</option>
+            <option value="recent">近期内容</option>
+            <option value="ongoing">长期开放</option>
+          </select>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <section class="section">
+    <div class="container">
+      <div class="tabs" id="resourceTabs"></div>
+      <div class="list" id="resourceList"></div>
+    </div>
+  </section>
+
+  </style>
+  <script>
+    (function loadCategoryHubScript() {
+      const script = document.createElement("script");
+      script.defer = true;
+      script.src = window.location.protocol === "file:" ? "public/assets/category-hub.js" : "/assets/category-hub.js";
+      document.body.appendChild(script);
+    })();
+  </script>
+<script>
+  (function loadCategoryAuthScript() {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = window.location.protocol === "file:" ? "public/assets/nav-auth.js" : "/assets/nav-auth.js";
+    document.body.appendChild(script);
+  })();
+</script>
+</body>
+</html>

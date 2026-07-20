@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "user_id": 1,
+    "user_name": "",
+    "user_org": "",
+    "title": "测试实习",
+    "meta": "用户发布",
+    "desc": "这是一个测试实习职位",
+    "image": "",
+    "link": "",
+    "opportunity_type": "internship",
+    "status": "approved",
+    "created_at": "2026-04-19T12:41:09.191Z",
+    "updated_at": "2026-04-19T12:41:34.946Z",
+    "reviewed_at": "2026-04-19T12:41:34.946Z",
+    "review_note": ""
+  }
+]

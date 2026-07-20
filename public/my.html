@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的 | 北京校园生态合作联盟</title>
+  <meta name="description" content="查看我的生态对接申请、活动报名和投递记录状态。">
+  <meta property="og:title" content="我的 | 北京校园生态合作联盟">
+  <meta property="og:description" content="查看我的申请和报名状态。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#091a33">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #071425;
+      --sidebar-w: 150px;
+      --topbar-h: 56px;
+      --panel: rgba(11,27,52,0.85);
+      --line: rgba(130,175,255,0.14);
+      --text: #eff6ff;
+      --text-soft: rgba(239,246,255,0.65);
+      --text-muted: rgba(191,219,254,0.45);
+      --brand: #60a5fa;
+      --brand-dim: rgba(96,165,250,0.12);
+      --radius: 14px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: "Noto Sans SC", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(37,99,235,0.18) 0%, transparent 40%),
+        linear-gradient(180deg, #071425 0%, #091a33 100%);
+    }
+
+    /* ── 顶栏 ─────────────────────────────── */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--topbar-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: rgba(7,20,37,0.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-soft);
+      text-decoration: none;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      transition: color .2s, border-color .2s;
+    }
+    .back-link:hover { color: var(--brand); border-color: var(--brand); }
+    .topbar-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .user-name-top {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft);
+    }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: color .2s, border-color .2s;
+    }
+    .btn-logout:hover { color: #fca5a5; border-color: rgba(239,68,68,0.4); }
+
+    /* ── 主体布局 ─────────────────────────── */
+    .layout {
+      display: flex;
+      height: 100vh;
+      padding-top: var(--topbar-h);
+    }
+
+    /* ── 左侧菜单 ─────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      height: 100%;
+      overflow: hidden;
+      background: rgba(7,20,37,0.7);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 12px;
+      gap: 4px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-soft);
+      border: 1px solid transparent;
+      transition: background .15s, color .15s, border-color .15s;
+      user-select: none;
+    }
+    .menu-item:hover {
+      background: var(--brand-dim);
+      color: var(--text);
+    }
+    .menu-item.active {
+      background: var(--brand-dim);
+      color: var(--brand);
+      border-color: rgba(96,165,250,0.2);
+      font-weight: 600;
+    }
+    .menu-icon { font-size: 16px; flex-shrink: 0; }
+    .menu-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 8px 4px;
+    }
+
+    /* ── 右侧内容 ─────────────────────────── */
+    .content {
+      flex: 1;
+      height: 100%;
+      overflow-y: auto;
+      padding: 32px 36px;
+    }
+    .content::-webkit-scrollbar { width: 6px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: rgba(96,165,250,0.2); border-radius: 3px; }
+
+    /* ── 面板 ─────────────────────────────── */
+    .panel {
+      display: none;
+      animation: fadeUp .2s ease;
+    }
+    .panel.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--text);
+    }
+
+    /* ── 记录卡片 ─────────────────────────── */
+    .record-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      transition: border-color .2s;
+    }
+    .record-card:hover { border-color: rgba(96,165,250,0.3); }
+    .record-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .record-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .badge {
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .badge-pending  { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .badge-approved { background: rgba(34,197,94,0.15);  color: #4ade80; }
+    .badge-rejected { background: rgba(239,68,68,0.15);  color: #fca5a5; }
+    .record-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── 空状态 ───────────────────────────── */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .5; }
+    .empty-text { font-size: 14px; line-height: 2; }
+    .empty-text a { color: var(--brand); text-decoration: none; }
+
+    /* ── 加载中 ───────────────────────────── */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ── 发布内容面板 ─────────────────────── */
+    .publish-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      max-width: 600px;
+    }
+    .publish-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      text-decoration: none;
+      color: var(--text);
+      transition: border-color .2s, transform .15s;
+      display: block;
+    }
+    .publish-card:hover {
+      border-color: var(--brand);
+      transform: translateY(-2px);
+    }
+    .publish-card-icon { font-size: 32px; margin-bottom: 10px; }
+    .publish-card-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .publish-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
+
+    /* ── 用户信息面板 ─────────────────────── */
+    .admin-link-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(37,99,235,0.18), rgba(59,130,246,0.12));
+      border: 1px solid rgba(96,165,250,0.3);
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: border-color .2s, background .2s;
+    }
+    .admin-link-card:hover {
+      border-color: #60a5fa;
+      background: linear-gradient(135deg, rgba(37,99,235,0.28), rgba(59,130,246,0.2));
+    }
+  
+    /* ── 管理员入口 ─────────────────────── */
+    .admin-link-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 14px;
+      padding: 12px 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(37,99,235,0.22), rgba(59,130,246,0.14));
+      border: 1px solid rgba(96,165,250,0.32);
+      color: #93c5fd;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: border-color .2s, background .2s;
+    }
+    .admin-link-btn:hover {
+      border-color: #60a5fa;
+      background: linear-gradient(135deg, rgba(37,99,235,0.32), rgba(59,130,246,0.22));
+      color: #bfdbfe;
+    }
+    .admin-embed {
+      --panel: rgba(13, 29, 56, 0.82);
+      --line: rgba(96,165,250,0.18);
+      --line-strong: rgba(96,165,250,0.32);
+      --text: #eff6ff;
+      --text-soft: rgba(239,246,255,0.72);
+      --text-muted: rgba(191,219,254,0.48);
+      --radius: 18px;
+      --radius-md: 14px;
+    }
+    .admin-embed .hidden { display: none !important; }
+    .admin-embed button, .admin-embed input, .admin-embed textarea { font: inherit; }
+    .admin-embed .auth-gate { display: flex; justify-content: center; padding: 12px 0; }
+    .admin-embed .auth-card { width: min(520px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+    .admin-embed .auth-card h2 { margin: 0 0 8px; }
+    .admin-embed .auth-card p { margin: 0 0 10px; color: var(--text-soft); font-size: 13px; }
+    .admin-embed .auth-mode-note { margin-bottom: 12px; color: var(--text-soft); font-size: 12px; }
+    .admin-embed .auth-error { min-height: 18px; color: #fecdd3; font-size: 12px; margin-top: 8px; }
+    .admin-embed .field { margin-bottom: 10px; }
+    .admin-embed .field label { display: block; margin-bottom: 6px; color: var(--text-soft); font-size: 13px; font-weight: 700; }
+    .admin-embed .input, .admin-embed .textarea { width: 100%; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text); border-radius: 10px; padding: 10px 12px; }
+    .admin-embed .textarea { min-height: 90px; resize: vertical; }
+    .admin-embed .admin-shell-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .admin-embed .admin-shell-header h2 { margin: 0; font-size: 20px; }
+    .admin-embed .header-meta { color: var(--text-soft); font-size: 13px; }
+    .admin-embed .header-meta-stack { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .admin-embed .status-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text-soft); font-size: 12px; font-weight: 700; }
+    .admin-embed .status-badge.local { color: #fcd34d; }
+    .admin-embed .status-badge.live { color: #86efac; }
+    .admin-embed .hero-panel, .admin-embed .manager-panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; }
+    .admin-embed .hero-panel { margin-bottom: 10px; }
+    .admin-embed .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: center; }
+    .admin-embed .tabs, .admin-embed .subtabs, .admin-embed .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .admin-embed .tab-btn, .admin-embed .subtab-btn, .admin-embed .btn { border: 1px solid var(--line); background: rgba(255,255,255,0.05); color: var(--text-soft); border-radius: 999px; padding: 8px 12px; cursor: pointer; }
+    .admin-embed .tab-btn.active, .admin-embed .subtab-btn.active, .admin-embed .btn-primary { color: white; border-color: transparent; background: linear-gradient(135deg, #1d4ed8, #3b82f6); }
+    .admin-embed .btn-gold { color: #fcd34d; }
+    .admin-embed .manager-head { display: flex; justify-content: space-between; align-items: end; gap: 10px; margin-bottom: 10px; }
+    .admin-embed .manager-head h3 { margin: 0 0 6px; font-size: 18px; }
+    .admin-embed .manager-head p { margin: 0; color: var(--text-soft); font-size: 13px; }
+    .admin-embed .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .admin-embed .card { padding: 12px; border-radius: var(--radius-md); background: rgba(255,255,255,0.04); border: 1px solid rgba(96,165,250,0.14); }
+    .admin-embed .card.empty { cursor: pointer; border-style: dashed; color: var(--text-muted); display: grid; place-items: center; min-height: 200px; text-align: center; }
+    .admin-embed .thumb { width: 100%; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; background: rgba(255,255,255,0.05); border: 1px solid rgba(96,165,250,0.12); margin-bottom: 8px; display: grid; place-items: center; color: var(--text-muted); }
+    .admin-embed .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .admin-embed .title { margin: 0 0 4px; font-size: 15px; font-weight: 700; color: #fff; }
+    .admin-embed .meta, .admin-embed .desc, .admin-embed .link { margin: 0 0 4px; color: var(--text-soft); font-size: 12px; line-height: 1.5; word-break: break-all; }
+    .admin-embed .link { color: #60a5fa; }
+    .admin-embed .card-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .admin-embed .mini-btn { padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: var(--text-soft); cursor: pointer; font-size: 12px; }
+    .admin-embed .modal { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(4,10,19,0.78); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: 0.2s ease; z-index: 200; }
+    .admin-embed .modal.open { opacity: 1; pointer-events: auto; }
+    .admin-embed .modal-box { width: min(620px, 100%); max-height: 90vh; overflow-y: auto; padding: 20px; border-radius: var(--radius); background: linear-gradient(180deg, rgba(13,29,56,0.98), rgba(8,22,37,0.98)); border: 1px solid var(--line); }
+    .admin-embed .modal-header { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+    .admin-embed .close-btn { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: rgba(255,255,255,0.06); color: white; cursor: pointer; }
+    .admin-embed .upload-box { border: 1px dashed var(--line-strong); border-radius: 10px; padding: 16px; text-align: center; color: var(--text-soft); cursor: pointer; }
+    .admin-embed #imageFile { display: none; }
+    .admin-embed .preview { margin-top: 10px; width: 100%; max-height: 180px; border-radius: 10px; object-fit: cover; display: none; }
+    .admin-embed .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+    .admin-embed .toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%) translateY(14px); padding: 10px 14px; border-radius: 999px; background: rgba(16,185,129,0.94); color: #fff; font-size: 13px; opacity: 0; pointer-events: none; transition: .25s ease; z-index: 300; }
+    .admin-embed .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .profile-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 28px;
+      max-width: 480px;
+    }
+    .profile-avatar-lg {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; font-weight: 700; color: #fff;
+      margin-bottom: 16px;
+    }
+    .profile-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .profile-email {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 13px;
+    }
+    .profile-row:last-child { border-bottom: none; }
+    .profile-label { color: var(--text-muted); }
+    .profile-value { color: var(--text-soft); }
+
+    /* ── 头像区域 ─────────────────────────── */
+    .profile-avatar-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .profile-avatar-lg {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      background-size: cover;
+      background-position: center;
+      border: 3px solid rgba(96,165,250,0.3);
+    }
+    .profile-avatar-lg:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px rgba(96,165,250,0.4);
+    }
+    .btn-change-avatar {
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text-soft);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-change-avatar:hover {
+      border-color: var(--brand);
+      color: var(--brand);
+    }
+    .profile-bio {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      text-align: center;
+      line-height: 1.6;
+    }
+    .btn-edit-profile {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--brand);
+      background: transparent;
+      color: var(--brand);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-edit-profile:hover {
+      background: var(--brand);
+      color: #fff;
+    }
+
+    /* ── 模态框 ───────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      backdrop-filter: blur(4px);
+    }
+    .modal-content {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 32px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 28px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+    }
+    .modal-close:hover {
+      color: var(--text);
+    }
+    .modal-content .form-group {
+      margin-bottom: 20px;
+    }
+    .modal-content label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text);
+    }
+    .modal-content input,
+    .modal-content textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+      font-size: 14px;
+      font-family: inherit;
+      transition: border-color .2s;
+    }
+    .modal-content input:focus,
+    .modal-content textarea:focus {
+      outline: none;
+      border-color: var(--brand);
+    }
+    .modal-content textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .btn-cancel {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-cancel:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+    .btn-save {
+      flex: 1;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform .15s;
+    }
+    .btn-save:hover {
+      transform: translateY(-1px);
+    }
+
+    /* ── 未登录 ───────────────────────────── */
+    .login-wall {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(7,20,37,0.96);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    .login-wall.show { display: flex; }
+    .login-box {
+      background: rgba(11,27,52,0.9);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 48px 40px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+    }
+    .login-box-icon { font-size: 48px; margin-bottom: 16px; }
+    .login-box h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .login-box p { font-size: 13px; color: var(--text-soft); margin-bottom: 24px; }
+    .btn-login {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+      margin-bottom: 10px;
+    }
+    .btn-register {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-soft);
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    /* ── 移动端 ───────────────────────────── */
+    @media (max-width: 700px) {
+      .sidebar { width: 60px; padding: 16px 8px; }
+      .menu-item { padding: 10px; justify-content: center; }
+      .menu-label { display: none; }
+      .content { padding: 20px 16px; }
+      .publish-cards { grid-template-columns: 1fr; }
+      .user-name-top { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 未登录遮罩 -->
+  <div class="login-wall" id="loginWall">
+    <div class="login-box">
+      <div class="login-box-icon">👤</div>
+      <h2>请先登录</h2>
+      <p>登录后查看您的申请记录、报名状态和投递进度</p>
+      <a href="login.html" class="btn-login" id="myLoginLink">立即登录</a>
+      <a href="register.html" class="btn-register" id="myRegisterLink">注册新账号</a>
+    </div>
+  </div>
+
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <a class="back-link" href="index.html" id="myBackHomeLink">← 返回首页</a>
+      <span class="topbar-title">我的</span>
+    </div>
+    <div class="topbar-right">
+      <div class="user-chip">
+        <div class="user-avatar" id="topAvatar"></div>
+        <span class="user-name-top" id="topName"></span>
+      </div>
+      <button class="btn-logout" id="userLogoutBtn" type="button" onclick="window.__allianceForceLogout && window.__allianceForceLogout()">退出</button>
+    </div>
+  </header>
+
+  <!-- 主体 -->
+  <div class="layout">
+
+    <!-- 左侧菜单 -->
+    <nav class="sidebar">
+      <div class="menu-item active" data-panel="applications">
+        <span class="menu-icon">🤝</span>
+        <span class="menu-label">生态对接</span>
+      </div>
+      <div class="menu-item" data-panel="registrations">
+        <span class="menu-icon">📅</span>
+        <span class="menu-label">活动报名</span>
+      </div>
+      <div class="menu-item" data-panel="deliveries">
+        <span class="menu-icon">📨</span>
+        <span class="menu-label">投递记录</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" data-panel="publish">
+        <span class="menu-icon">📢</span>
+        <span class="menu-label">发布内容</span>
+      </div>
+      <div class="menu-item" data-panel="profile">
+        <span class="menu-icon">👤</span>
+        <span class="menu-label">用户信息</span>
+      </div>
+      <div class="menu-divider"></div>
+      <div class="menu-item" id="adminMenuItem" data-panel="admin" style="display:none;">
+        <span class="menu-icon">⚙</span>
+        <span class="menu-label">联盟后台</span>
+      </div>
+    </nav>
+
+    <!-- 右侧内容 -->
+    <main class="content">
+
+      <!-- 生态对接 -->
+      <div class="panel active" id="panel-applications">
+        <div class="panel-title">生态对接申请</div>
+        <div id="applicationsList"><div class="loading">加载中...</div></div>
+      </div>
+
+      <!-- 活动报名 -->
+      <div class="panel" id="panel-registrations">
+        <div class="panel-title">活动报名记录</div>
+        <div id="registrationsList"><div class="loading">加载中...</div></div>
+      </div>
+
+      <!-- 投递记录 -->
+      <div class="panel" id="panel-deliveries">
+        <div class="panel-title">投递记录</div>
+        <div id="deliveriesList"><div class="loading">加载中...</div></div>
+      </div>
+
+      <!-- 发布内容 -->
+      <div class="panel" id="panel-publish">
+        <div class="panel-title">发布内容</div>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:24px;">
+          发布活动或实习实践信息，审核通过后将对所有用户展示。
+        </p>
+        <div class="publish-cards">
+          <a class="publish-card" href="publish.html?type=event" id="publishEventLink">
+            <div class="publish-card-icon">📅</div>
+            <div class="publish-card-title">发布活动</div>
+            <div class="publish-card-desc">发布讲座、比赛、沙龙等活动信息</div>
+          </a>
+          <a class="publish-card" href="publish.html?type=recruit" id="publishRecruitLink">
+            <div class="publish-card-icon">💼</div>
+            <div class="publish-card-title">发布实习实践</div>
+            <div class="publish-card-desc">发布实习、实践、项目等机会</div>
+          </a>
+        </div>
+        <div style="margin-top:28px;">
+          <div class="panel-title" style="font-size:16px;">我的发布</div>
+          <div id="myPublishList"><div class="loading">加载中...</div></div>
+        </div>
+      </div>
+
+      <!-- 用户信息 -->
+      <div class="panel" id="panel-profile">
+        <div class="panel-title">用户信息</div>
+        <div class="profile-card">
+          <div class="profile-avatar-section">
+            <div class="profile-avatar-lg" id="profileAvatar">
+              <input type="file" id="avatarInput" accept="image/*" style="display:none">
+            </div>
+            <button class="btn-change-avatar" id="changeAvatarBtn">更换头像</button>
+          </div>
+          <div class="profile-name" id="profileName"></div>
+          <div class="profile-email" id="profileEmail"></div>
+          <div class="profile-bio" id="profileBio"></div>
+          <div class="profile-row">
+            <span class="profile-label">账号状态</span>
+            <span class="profile-value">正常</span>
+          </div>
+          <div class="profile-row">
+            <span class="profile-label">注册时间</span>
+            <span class="profile-value" id="profileCreatedAt">-</span>
+          </div>
+          <button class="btn-edit-profile" id="editProfileBtn">编辑资料</button>
+        </div>
+
+        <!-- 编辑资料模态框 -->
+        <div class="modal-overlay" id="editProfileModal" style="display:none">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>编辑个人资料</h3>
+              <button class="modal-close" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="editProfileForm">
+              <div class="form-group">
+                <label for="editNickname">昵称</label>
+                <input type="text" id="editNickname" name="nickname" placeholder="您的昵称">
+              </div>
+              <div class="form-group">
+                <label for="editBio">个人简介</label>
+                <textarea id="editBio" name="bio" rows="3" placeholder="介绍一下自己吧"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="editPhone">手机号</label>
+                <input type="tel" id="editPhone" name="phone" placeholder="13800138000">
+              </div>
+              <div class="form-group">
+                <label for="editOrgName">学校/单位</label>
+                <input type="text" id="editOrgName" name="orgName" placeholder="您的单位">
+              </div>
+              <div class="form-group">
+                <label for="editOrgRole">职务/角色</label>
+                <input type="text" id="editOrgRole" name="orgRole" placeholder="如：学生、教师、负责人">
+              </div>
+              <div class="modal-actions">
+                <button type="button" class="btn-cancel" id="cancelEditBtn">取消</button>
+                <button type="submit" class="btn-save">保存</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- 联盟后台（管理员，内嵌模块） -->
+      <div class="panel" id="panel-admin">
+        <div class="admin-embed">
+          <div class="auth-gate" id="authGate">
+            <div class="auth-card">
+              <h2>后台登录</h2>
+              <p>登录后可直接维护联盟首页内容。</p>
+              <div class="auth-mode-note" id="modeNotice">正在检测当前模式…</div>
+              <form id="authForm">
+                <div class="field">
+                  <label for="loginUsername">账号</label>
+                  <input class="input" id="loginUsername" type="text" placeholder="请输入后台账号">
+                </div>
+                <div class="field">
+                  <label for="loginPassword">密码</label>
+                  <input class="input" id="loginPassword" type="password" placeholder="请输入后台密码">
+                </div>
+                <button class="btn btn-primary" type="submit" style="width:100%;">登录后台</button>
+                <div class="auth-error" id="loginError"></div>
+              </form>
+            </div>
+          </div>
+
+          <div class="hidden" id="appShell">
+            <div class="admin-shell-header">
+              <div class="header-meta-stack"></div>
+            </div>
+            <div class="hero-panel">
+              <div class="toolbar">
+                <div class="tabs" id="mainTabs"></div>
+                <div class="actions">
+                  <button class="btn btn-gold" id="importBtn">导入数据</button>
+                  <button class="btn" id="exportBtn">导出数据</button>
+                  <button class="btn btn-primary" id="addBtn">新增内容</button>
+                  <input id="importFile" type="file" accept=".json" class="hidden">
+                </div>
+              </div>
+            </div>
+            <div class="manager-panel">
+              <div class="manager-head">
+                <div>
+                  <h3 id="panelTitle">资源分类</h3>
+                  <p id="panelDesc">在这里上传栏目图片、标题和补充说明。</p>
+                </div>
+                <div class="subtabs" id="subTabs"></div>
+              </div>
+              <div class="grid" id="grid"></div>
+            </div>
+          </div>
+
+          <div class="modal" id="editorModal">
+            <div class="modal-box">
+              <div class="modal-header">
+                <h3 id="modalTitle">新增内容</h3>
+                <button class="close-btn" type="button" id="closeModal">×</button>
+              </div>
+              <div class="field">
+                <label for="titleInput">标题</label>
+                <input class="input" id="titleInput" type="text" placeholder="请输入标题">
+              </div>
+              <div class="field">
+                <label for="metaInput" id="metaLabel">补充信息</label>
+                <input class="input" id="metaInput" type="text" placeholder="可选">
+              </div>
+              <div class="field">
+                <label for="descInput" id="descLabel">描述</label>
+                <textarea class="textarea" id="descInput" placeholder="可选，用于首页补充说明"></textarea>
+              </div>
+              <div class="field" id="itemsField">
+                <label for="itemsInput">标签项</label>
+                <textarea class="textarea" id="itemsInput" placeholder="一行一个，用于资源分类卡片补充展示"></textarea>
+              </div>
+              <div class="field" id="linkField">
+                <label for="linkInput">链接</label>
+                <input class="input" id="linkInput" type="text" placeholder="https://example.com 或 mailto:xxx@example.com">
+              </div>
+              <div class="field">
+                <label>图片</label>
+                <div class="upload-box" id="uploadBox">
+                  点击上传图片
+                  <input id="imageFile" type="file" accept="image/*">
+                  <img id="previewImage" class="preview" alt="预览">
+                </div>
+              </div>
+              <div class="modal-actions">
+                <button class="btn" type="button" id="cancelBtn">取消</button>
+                <button class="btn btn-primary" type="button" id="saveBtn">保存</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="toast" id="toast">已保存</div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      var isFileMode = window.location.protocol === "file:";
+      if (isFileMode) {
+        document.getElementById("myLoginLink").href = "login.html";
+        document.getElementById("myRegisterLink").href = "register.html";
+        document.getElementById("myBackHomeLink").href = "index.html";
+        document.getElementById("publishEventLink").href = "publish.html?type=event";
+        document.getElementById("publishRecruitLink").href = "publish.html?type=recruit";
+      }
+
+      function esc(value) {
+        return String(value || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function formatDate(value) {
+        if (!value) return "";
+        return new Date(value).toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        });
+      }
+
+      function setText(id, value) {
+        var el = document.getElementById(id);
+        if (el) el.textContent = value || "";
+      }
+
+      function showPanel(panelId) {
+        document.querySelectorAll(".menu-item[data-panel]").forEach(function (item) {
+          item.classList.toggle("active", item.dataset.panel === panelId);
+        });
+        document.querySelectorAll(".panel").forEach(function (panel) {
+          panel.classList.toggle("active", panel.id === "panel-" + panelId);
+        });
+        var content = document.querySelector(".content");
+        if (content) content.scrollTop = 0;
+      }
+
+      function emptyBlock(text, extra) {
+        return '<div class="empty"><div class="empty-icon">📭</div><div class="empty-text">' +
+          esc(text) + (extra ? "<br>" + extra : "") + "</div></div>";
+      }
+
+      function renderDirectoryApplication(item) {
+        var statusMap = {
+          pending: { label: "联盟初审中", klass: "badge-pending" },
+          reviewing: { label: "对接评估中", klass: "badge-pending" },
+          matched: { label: "已转交对接", klass: "badge-approved" },
+          contacted: { label: "对接沟通中", klass: "badge-approved" },
+          completed: { label: "对接已完成", klass: "badge-approved" },
+          rejected: { label: "当前暂不匹配", klass: "badge-rejected" }
+        };
+        var statusInfo = statusMap[item.status] || statusMap.pending;
+        var title = item.targetTitle || item.title || "未命名";
+        var meta = item.cooperationIntent || item.targetMeta || item.meta || item.applicantOrg || "";
+        return '<div class="record-card">' +
+          '<div class="record-row">' +
+            '<span class="record-name">' + esc(title) + '</span>' +
+            '<span class="badge ' + statusInfo.klass + '">' + esc(statusInfo.label) + '</span>' +
+          '</div>' +
+          (meta ? '<div class="record-meta">' + esc(meta) + '</div>' : "") +
+          (item.trackingCode ? '<div class="record-meta">查询编号：' + esc(item.trackingCode) + '</div>' : "") +
+          (item.statusNote ? '<div class="record-meta">' + esc(item.statusNote) + '</div>' : "") +
+          '<div class="record-meta">' + esc(formatDate(item.createdAt || item.created_at)) + '</div>' +
+        '</div>';
+      }
+
+      function initLocalFallback() {
+        if (!isFileMode) return;
+
+        document.querySelectorAll(".menu-item[data-panel]").forEach(function (item) {
+          item.addEventListener("click", function (event) {
+            event.preventDefault();
+            showPanel(item.dataset.panel);
+          });
+        });
+
+        var logoutBtn = document.getElementById("userLogoutBtn");
+        if (logoutBtn) {
+          logoutBtn.addEventListener("click", function () {
+            try {
+              localStorage.removeItem("alliance_token");
+              localStorage.removeItem("alliance_user");
+            } catch (error) {}
+            window.location.href = "login.html";
+          });
+        }
+
+        var token = null;
+        var user = null;
+        try {
+          token = localStorage.getItem("alliance_token");
+          var rawUser = localStorage.getItem("alliance_user");
+          user = rawUser ? JSON.parse(rawUser) : null;
+        } catch (error) {}
+
+        if (!token || !user) {
+          document.getElementById("loginWall").classList.add("show");
+          return;
+        }
+
+        document.getElementById("loginWall").classList.remove("show");
+
+        var nickname = user.nickname || user.email || "用户";
+        var initial = nickname.slice(0, 1).toUpperCase();
+        setText("topAvatar", initial);
+        setText("topName", nickname);
+        setText("profileAvatar", initial);
+        setText("profileName", nickname);
+        setText("profileEmail", user.email || "");
+        setText("profileCreatedAt", formatDate(user.created_at));
+
+        if (user.isAdmin) {
+          var adminMenuItem = document.getElementById("adminMenuItem");
+          if (adminMenuItem) adminMenuItem.style.display = "flex";
+        }
+
+        var applicationsList = document.getElementById("applicationsList");
+        if (applicationsList) {
+          var localApplications = [];
+          try {
+            localApplications = JSON.parse(localStorage.getItem("alliance_directory_applications") || "[]");
+          } catch (error) {}
+          applicationsList.innerHTML = localApplications.length
+            ? localApplications.map(renderDirectoryApplication).join("")
+            : emptyBlock("暂无生态对接申请", '<a href="directory-apply.html">去提交申请</a>');
+        }
+
+        var registrationsList = document.getElementById("registrationsList");
+        if (registrationsList) {
+          registrationsList.innerHTML = emptyBlock("本地模式下暂无活动报名记录", '<a href="categories.html">查看活动</a>');
+        }
+
+        var deliveriesList = document.getElementById("deliveriesList");
+        if (deliveriesList) {
+          deliveriesList.innerHTML = emptyBlock("本地模式下暂无投递记录", '<a href="categories.html">查看机会</a>');
+        }
+
+        var myPublishList = document.getElementById("myPublishList");
+        if (myPublishList) {
+          myPublishList.innerHTML = emptyBlock("本地模式下还没有发布过内容", '<a href="publish.html">去发布内容</a>');
+        }
+      }
+
+      initLocalFallback();
+
+      (function loadEmbeddedAdminScript() {
+        var script = document.createElement("script");
+        script.defer = true;
+        script.src = isFileMode ? "public/assets/admin.js?v=20260516_embed" : "/assets/admin.js?v=20260516_embed";
+        document.body.appendChild(script);
+      })();
+
+      // ── 头像上传功能 ─────────────────────────
+      var avatarInput = document.getElementById("avatarInput");
+      var changeAvatarBtn = document.getElementById("changeAvatarBtn");
+      var profileAvatar = document.getElementById("profileAvatar");
+
+      if (changeAvatarBtn && avatarInput) {
+        changeAvatarBtn.addEventListener("click", function() {
+          avatarInput.click();
+        });
+
+        avatarInput.addEventListener("change", function(e) {
+          var file = e.target.files[0];
+          if (!file) return;
+
+          // 验证文件类型
+          if (!file.type.startsWith("image/")) {
+            alert("请选择图片文件");
+            return;
+          }
+
+          // 验证文件大小（最大 5MB）
+          if (file.size > 5 * 1024 * 1024) {
+            alert("图片大小不能超过 5MB");
+            return;
+          }
+
+          // 预览图片
+          var reader = new FileReader();
+          reader.onload = function(event) {
+            profileAvatar.style.backgroundImage = "url(" + event.target.result + ")";
+            profileAvatar.textContent = "";
+          };
+          reader.readAsDataURL(file);
+
+          // 上传到服务器
+          var formData = new FormData();
+          formData.append("avatar", file);
+
+          var token = localStorage.getItem("alliance_token");
+          fetch("/api/user/avatar", {
+            method: "POST",
+            headers: {
+              "Authorization": "Bearer " + token
+            },
+            body: formData
+          })
+          .then(function(response) { return response.json(); })
+          .then(function(data) {
+            if (data.success) {
+              // 更新用户信息
+              var user = JSON.parse(localStorage.getItem("alliance_user") || "{}");
+              user.avatar_url = data.avatar_url;
+              localStorage.setItem("alliance_user", JSON.stringify(user));
+
+              // 更新顶部头像
+              var topAvatar = document.getElementById("topAvatar");
+              if (topAvatar) {
+                topAvatar.style.backgroundImage = "url(" + data.avatar_url + ")";
+                topAvatar.textContent = "";
+              }
+
+              alert("头像更新成功");
+            } else {
+              alert(data.message || "上传失败");
+            }
+          })
+          .catch(function(error) {
+            console.error("Upload error:", error);
+            alert("上传失败，请重试");
+          });
+        });
+      }
+
+      // ── 编辑资料功能 ─────────────────────────
+      var editProfileBtn = document.getElementById("editProfileBtn");
+      var editProfileModal = document.getElementById("editProfileModal");
+      var closeModalBtn = document.getElementById("closeModalBtn");
+      var cancelEditBtn = document.getElementById("cancelEditBtn");
+      var editProfileForm = document.getElementById("editProfileForm");
+
+      if (editProfileBtn && editProfileModal) {
+        editProfileBtn.addEventListener("click", function() {
+          // 加载当前用户信息
+          var user = JSON.parse(localStorage.getItem("alliance_user") || "{}");
+          document.getElementById("editNickname").value = user.nickname || "";
+          document.getElementById("editBio").value = user.bio || "";
+          document.getElementById("editPhone").value = user.phone || "";
+          document.getElementById("editOrgName").value = user.org_name || "";
+          document.getElementById("editOrgRole").value = user.org_role || "";
+
+          editProfileModal.style.display = "flex";
+        });
+
+        if (closeModalBtn) {
+          closeModalBtn.addEventListener("click", function() {
+            editProfileModal.style.display = "none";
+          });
+        }
+
+        if (cancelEditBtn) {
+          cancelEditBtn.addEventListener("click", function() {
+            editProfileModal.style.display = "none";
+          });
+        }
+
+        // 点击遮罩层关闭
+        editProfileModal.addEventListener("click", function(e) {
+          if (e.target === editProfileModal) {
+            editProfileModal.style.display = "none";
+          }
+        });
+
+        // 提交表单
+        if (editProfileForm) {
+          editProfileForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            var formData = new FormData(editProfileForm);
+            var data = {
+              nickname: formData.get("nickname"),
+              bio: formData.get("bio"),
+              phone: formData.get("phone"),
+              org_name: formData.get("orgName"),
+              org_role: formData.get("orgRole")
+            };
+
+            var token = localStorage.getItem("alliance_token");
+            fetch("/api/user/profile", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + token
+              },
+              body: JSON.stringify(data)
+            })
+            .then(function(response) { return response.json(); })
+            .then(function(result) {
+              if (result.success) {
+                // 更新本地存储
+                var user = JSON.parse(localStorage.getItem("alliance_user") || "{}");
+                Object.assign(user, data);
+                localStorage.setItem("alliance_user", JSON.stringify(user));
+
+                // 更新页面显示
+                setText("profileName", user.nickname || user.email);
+                setText("profileBio", user.bio || "");
+
+                // 更新顶部显示
+                setText("topName", user.nickname || user.email);
+
+                editProfileModal.style.display = "none";
+                alert("资料更新成功");
+              } else {
+                alert(result.message || "更新失败");
+              }
+            })
+            .catch(function(error) {
+              console.error("Update error:", error);
+              alert("更新失败，请重试");
+            });
+          });
+        }
+      }
+
+      if (window.AllianceBootstrap && window.AllianceBootstrap.loadScripts) {
+        window.AllianceBootstrap.loadScripts([
+          "assets/nav-auth.js?v=202604201933",
+          "assets/auth-guard.js?v=20260420",
+          "assets/user-center.js?v=2026050401"
+        ]);
+        return;
+      }
+
+      [
+        isFileMode ? "public/assets/nav-auth.js?v=202604201933" : "/assets/nav-auth.js?v=202604201933",
+        isFileMode ? "public/assets/auth-guard.js?v=20260420" : "/assets/auth-guard.js?v=20260420",
+        isFileMode ? "public/assets/user-center.js?v=2026050401" : "/assets/user-center.js?v=2026050401"
+      ].forEach(function (src) {
+        var script = document.createElement("script");
+        script.src = src;
+        document.body.appendChild(script);
+      });
+    })();
+  </script>
+</body>
+</html>

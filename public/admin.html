@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>联盟内容后台 | 北京校园生态合作联盟</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <script>
+    (function () {
+      try {
+        var token = localStorage.getItem("alliance_token");
+        var rawUser = localStorage.getItem("alliance_user");
+        var user = rawUser ? JSON.parse(rawUser) : null;
+
+        if (token === "local-admin-token" && user && user.isAdmin) {
+          document.documentElement.classList.add("admin-preauthed");
+          return;
+        }
+
+        if (!token) return;
+        var parts = token.split(".");
+        if (parts.length !== 3) return;
+        var base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+        var pad = base64.length + (4 - base64.length % 4) % 4;
+        var payload = JSON.parse(atob(base64 + "=".repeat(pad)));
+        if (payload && payload.role === "admin") {
+          document.documentElement.classList.add("admin-preauthed");
+        }
+      } catch (error) {}
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #081625;
+      --panel: rgba(13, 29, 56, 0.82);
+      --panel-soft: rgba(255,255,255,0.05);
+      --line: rgba(96,165,250,0.18);
+      --line-strong: rgba(96,165,250,0.32);
+      --text: #eff6ff;
+      --text-soft: rgba(239,246,255,0.72);
+      --text-muted: rgba(191,219,254,0.48);
+      --brand: #60a5fa;
+      --brand-strong: #2563eb;
+      --gold: #fbbf24;
+      --danger: #fb7185;
+      --success: #34d399;
+      --shadow: 0 24px 60px rgba(0,0,0,0.3);
+      --radius: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+  </style>
+  <style>
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px;
+      background:
+        radial-gradient(circle at top left, rgba(37,99,235,0.18), transparent 28%),
+        linear-gradient(180deg, #071320, #081625 40%, #06101a);
+      color: var(--text);
+      font-family: "Noto Sans SC", sans-serif;
+    }
+    button, input, textarea { font: inherit; }
+    .shell { max-width: 1240px; margin: 0 auto; }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+    .header p {
+      margin: 8px 0 0;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .header-meta-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-soft);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .status-badge.local {
+      color: #fcd34d;
+      border-color: rgba(251,191,36,0.24);
+      background: rgba(251,191,36,0.08);
+    }
+    .status-badge.live {
+      color: #86efac;
+      border-color: rgba(52,211,153,0.24);
+      background: rgba(52,211,153,0.08);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+    }
+    .hero-panel,
+    .manager-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+    .hero-panel {
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+    .tips {
+      color: #cfe4ff;
+      font-size: 13px;
+      line-height: 1.75;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-top: 18px;
+    }
+    .tabs,
+    .subtabs,
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tab-btn,
+    .subtab-btn,
+    .btn {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.05);
+      color: var(--text-soft);
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
+    }
+    .tab-btn.active,
+    .subtab-btn.active,
+    .btn-primary {
+      color: white;
+      border-color: transparent;
+      background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+      box-shadow: 0 12px 24px rgba(37,99,235,0.3);
+    }
+    .btn-gold {
+      color: #fcd34d;
+      background: rgba(251,191,36,0.1);
+      border-color: rgba(251,191,36,0.25);
+    }
+    .btn-danger {
+      color: #fecdd3;
+      background: rgba(244,63,94,0.1);
+      border-color: rgba(244,63,94,0.22);
+    }
+    .manager-panel { padding: 22px; }
+    .manager-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .manager-head h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+    .manager-head p {
+      margin: 0;
+      color: var(--text-soft);
+      font-size: 14px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      padding: 14px;
+      border-radius: var(--radius-md);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(96,165,250,0.14);
+      transition: 0.2s ease;
+      cursor: grab;
+    }
+    .card:hover { border-color: var(--line-strong); transform: translateY(-2px); }
+    .card.dragging { opacity: 0.35; }
+    .card.empty {
+      cursor: pointer;
+      border-style: dashed;
+      color: var(--text-muted);
+      display: grid;
+      place-items: center;
+      min-height: 250px;
+      text-align: center;
+    }
+    .thumb {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      border-radius: 14px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(96,165,250,0.12);
+      margin-bottom: 12px;
+      display: grid;
+      place-items: center;
+      color: var(--text-muted);
+    }
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .title {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
+    }
+    .meta,
+    .desc,
+    .link {
+      margin: 0 0 6px;
+      color: var(--text-soft);
+      font-size: 12px;
+      line-height: 1.6;
+      word-break: break-all;
+    }
+    .link { color: var(--brand); }
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    .mini-btn {
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-soft);
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(4,10,19,0.78);
+      backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.2s ease;
+      z-index: 10;
+    }
+    .modal.open { opacity: 1; pointer-events: auto; }
+    .modal-box {
+      width: min(620px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(13,29,56,0.98), rgba(8,22,37,0.98));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+    .modal-header h3 { margin: 0; font-size: 22px; }
+    .close-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.06);
+      color: white;
+      cursor: pointer;
+    }
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-soft);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .input,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.05);
+      color: white;
+      padding: 12px 14px;
+    }
+    .textarea {
+      min-height: 96px;
+      resize: vertical;
+      border-radius: 18px;
+    }
+    .upload-box {
+      padding: 18px;
+      border: 2px dashed rgba(96,165,250,0.24);
+      border-radius: 18px;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-soft);
+      background: rgba(255,255,255,0.03);
+    }
+    .upload-box input { display: none; }
+    .preview {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      border-radius: 14px;
+      margin-top: 14px;
+      display: none;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: end;
+      gap: 10px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 26px;
+      transform: translateX(-50%) translateY(10px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 12px 20px;
+      border-radius: 999px;
+      background: rgba(16,185,129,0.94);
+      color: white;
+      font-size: 14px;
+      font-weight: 800;
+      transition: 0.2s ease;
+      z-index: 30;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .hidden { display: none !important; }
+    .auth-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 60;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(4, 10, 19, 0.82);
+      backdrop-filter: blur(20px);
+    }
+    .auth-card {
+      width: min(460px, 100%);
+      padding: 28px;
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(13,29,56,0.98), rgba(8,22,37,0.98));
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+    .auth-card h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+    .auth-card p {
+      margin: 0 0 22px;
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .auth-mode-note {
+      margin: -4px 0 18px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid rgba(96,165,250,0.18);
+      background: rgba(255,255,255,0.04);
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .auth-mode-note strong {
+      color: white;
+    }
+    .auth-error {
+      min-height: 22px;
+      margin-top: 12px;
+      color: #fecdd3;
+      font-size: 13px;
+    }
+    .header-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: end;
+      gap: 10px;
+      align-items: center;
+    }
+    .header-meta {
+      color: var(--text-soft);
+      font-size: 13px;
+    }
+    @media (max-width: 720px) {
+      body { padding: 16px; }
+      .header, .manager-head, .toolbar { align-items: stretch; flex-direction: column; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    html.admin-preauthed #authGate { display: none !important; }
+    html.admin-preauthed #appShell { display: block !important; }
+  
+  </style>
+</head>
+<body>
+  <div class="auth-gate" id="authGate">
+    <div class="auth-card">
+      <h2>后台登录</h2>
+      <p>正式版后台已经接入 Node.js、MySQL 和火山引擎对象存储。登录后可以直接上传图片并发布到首页。</p>
+      <div class="auth-mode-note" id="modeNotice">正在检测当前模式…</div>
+      <form id="authForm">
+        <div class="field">
+          <label for="loginUsername">账号</label>
+          <input class="input" id="loginUsername" type="text" placeholder="请输入后台账号">
+        </div>
+        <div class="field">
+          <label for="loginPassword">密码</label>
+          <input class="input" id="loginPassword" type="password" placeholder="请输入后台密码">
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%;">登录后台</button>
+        <div class="auth-error" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="shell hidden" id="appShell">
+    <div class="header">
+      <div class="header-info">
+        <h1>🦞 联盟内容后台</h1>
+        <div class="header-meta-stack">
+          <span class="status-badge" id="modeBadge">模式检测中</span>
+          <span class="header-meta" id="adminIdentity"></span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <a class="back-link" href="index.html">返回首页</a>
+      </div>
+    </div>
+
+    <div class="hero-panel">
+      <div class="toolbar">
+        <div class="tabs" id="mainTabs"></div>
+        <div class="actions">
+          <button class="btn btn-gold" id="importBtn">导入数据</button>
+          <button class="btn" id="exportBtn">导出数据</button>
+          <button class="btn btn-primary" id="addBtn">新增内容</button>
+          <input id="importFile" type="file" accept=".json" class="hidden">
+        </div>
+      </div>
+    </div>
+
+    <div class="manager-panel">
+      <div class="manager-head">
+        <div>
+          <h2 id="panelTitle">资源分类</h2>
+          <p id="panelDesc">在这里上传栏目图片、标题和补充说明。</p>
+        </div>
+        <div class="subtabs" id="subTabs"></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="editorModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="modalTitle">新增内容</h3>
+        <button class="close-btn" type="button" id="closeModal">×</button>
+      </div>
+      <div class="field">
+        <label for="titleInput">标题</label>
+        <input class="input" id="titleInput" type="text" placeholder="请输入标题">
+      </div>
+      <div class="field">
+        <label for="metaInput" id="metaLabel">补充信息</label>
+        <input class="input" id="metaInput" type="text" placeholder="可选">
+      </div>
+      <div class="field">
+        <label for="descInput" id="descLabel">描述</label>
+        <textarea class="textarea" id="descInput" placeholder="可选，用于首页补充说明"></textarea>
+      </div>
+      <div class="field" id="itemsField">
+        <label for="itemsInput">标签项</label>
+        <textarea class="textarea" id="itemsInput" placeholder="一行一个，用于资源分类卡片补充展示"></textarea>
+      </div>
+      <div class="field" id="linkField">
+        <label for="linkInput">链接</label>
+        <input class="input" id="linkInput" type="text" placeholder="https://example.com 或 mailto:xxx@example.com">
+      </div>
+      <div class="field">
+        <label>图片</label>
+        <div class="upload-box" id="uploadBox">
+          点击上传图片
+          <input id="imageFile" type="file" accept="image/*">
+          <img id="previewImage" class="preview" alt="预览">
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" type="button" id="cancelBtn">取消</button>
+        <button class="btn btn-primary" type="button" id="saveBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">已保存</div>
+  <script>
+    (function loadAdminScript() {
+      const script = document.createElement("script");
+      script.defer = true;
+      const basePath = window.location.protocol === "file:" ? "public/assets/admin.js" : "/assets/admin.js";
+      script.src = basePath + "?v=202604202106";
+      document.body.appendChild(script);
+    })();
+  </script>
+</body>
+</html>

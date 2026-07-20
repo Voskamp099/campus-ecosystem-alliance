@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发布内容 | 北京校园生态合作联盟</title>
+  <meta name="description" content="发布活动或实习实践信息，让更多人看到你的机会。">
+  <meta property="og:title" content="发布内容 | 北京校园生态合作联盟">
+  <meta property="og:description" content="发布活动或实习实践信息。">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #091a33;
+      --text: #e6f0ff;
+      --muted: #9fb3d0;
+      --accent: #60a5fa;
+      --panel: rgba(255,255,255,0.06);
+      --line: rgba(255,255,255,0.12);
+    }
+    body { margin:0; min-height:100vh; background:linear-gradient(180deg,#071425,#091a33); color:var(--text); font-family:"Noto Sans SC",sans-serif; }
+    .page { max-width:720px; margin:0 auto; padding:100px 24px 60px; }
+    h1 { font-size:1.75rem; font-weight:700; margin-bottom:8px; }
+    .desc { color:var(--muted); margin-bottom:32px; }
+    .tabs { display:flex; gap:12px; margin-bottom:28px; }
+    .tab { padding:12px 24px; border-radius:999px; background:var(--panel); border:1px solid var(--line); color:var(--muted); cursor:pointer; font-size:0.95rem; font-weight:500; transition:all .2s; }
+    .tab.active { background:var(--accent); color:#fff; border-color:var(--accent); }
+    .tab:hover:not(.active) { border-color:var(--accent); color:var(--text); }
+    .form-section { display:none; }
+    .form-section.active { display:block; }
+    .form-group { margin-bottom:20px; }
+    label { display:block; font-size:0.9rem; font-weight:500; margin-bottom:8px; color:var(--text); }
+    input, textarea, select { width:100%; padding:14px 16px; border-radius:12px; border:1px solid var(--line); background:rgba(0,0,0,0.2); color:var(--text); font-size:1rem; font-family:inherit; transition:border-color .2s; }
+    input:focus, textarea:focus, select:focus { outline:none; border-color:var(--accent); }
+    textarea { min-height:120px; resize:vertical; }
+    input::placeholder, textarea::placeholder { color:var(--muted); }
+    .hint { font-size:0.8rem; color:var(--muted); margin-top:6px; }
+    .submit-btn { width:100%; padding:16px; border-radius:12px; border:none; background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; font-size:1rem; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .15s; }
+    .submit-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(37,99,235,0.4); }
+    .submit-btn:disabled { opacity:0.5; cursor:not-allowed; transform:none; }
+    .notice { padding:14px 18px; border-radius:12px; margin-bottom:24px; font-size:0.9rem; }
+    .notice.info { background:rgba(59,130,246,0.15); border:1px solid rgba(59,130,246,0.3); color:#93c5fd; }
+    .notice.success { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.3); color:#86efac; }
+    .notice.error { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); color:#fca5a5; }
+    .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--muted); text-decoration:none; font-size:0.9rem; margin-bottom:20px; }
+    .back-link:hover { color:var(--accent); }
+    @media (max-width:600px) { .page { padding:80px 16px 40px; } h1 { font-size:1.5rem; } }
+  </style>
+</head>
+<body>
+
+  <main class="page">
+    <a class="back-link" href="index.html" id="publishBackHomeLink">← 返回首页</a>
+    <h1>发布内容</h1>
+    <p class="desc">发布活动或实习实践信息，审核通过后将对所有用户展示。</p>
+
+    <div class="notice info">
+      💡 发布的内容需要管理员审核通过后才会公开显示。审核结果可在「我的」页面查看。
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-type="event">📅 发布活动</button>
+      <button class="tab" data-type="recruit">💼 发布实习实践</button>
+    </div>
+
+    <!-- 活动表单 -->
+    <form id="eventForm" class="form-section active">
+      <div class="form-group">
+        <label for="eventTitle">活动标题 *</label>
+        <input type="text" id="eventTitle" placeholder="例如：校园创新大赛" required>
+      </div>
+      <div class="form-group">
+        <label for="eventMeta">标签信息</label>
+        <input type="text" id="eventMeta" placeholder="例如：AI 活动 · 北京 · 线下">
+      </div>
+      <div class="form-group">
+        <label for="eventDesc">活动描述 *</label>
+        <textarea id="eventDesc" placeholder="详细介绍活动内容、时间地点、参与方式等" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="eventDate">活动时间</label>
+        <input type="text" id="eventDate" placeholder="例如：2026年5月10日 14:00">
+      </div>
+      <div class="form-group">
+        <label for="eventLocation">活动地点</label>
+        <input type="text" id="eventLocation" placeholder="例如：北京大学学生活动中心">
+      </div>
+      <div class="form-group">
+        <label for="eventLink">报名/详情链接</label>
+        <input type="url" id="eventLink" placeholder="https://...">
+      </div>
+      <button type="submit" class="submit-btn">提交活动</button>
+    </form>
+
+    <!-- 实习实践表单 -->
+    <form id="recruitForm" class="form-section">
+      <div class="form-group">
+        <label for="recruitTitle">职位标题 *</label>
+        <input type="text" id="recruitTitle" placeholder="例如：AI 产品经理实习生" required>
+      </div>
+      <div class="form-group">
+        <label for="recruitType">类型</label>
+        <select id="recruitType">
+          <option value="internship">实习</option>
+          <option value="practice">实践</option>
+          <option value="project">项目</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="recruitMeta">标签信息</label>
+        <input type="text" id="recruitMeta" placeholder="例如：北京 · 京东总部 · 实习3个月+">
+      </div>
+      <div class="form-group">
+        <label for="recruitDesc">职位描述 *</label>
+        <textarea id="recruitDesc" placeholder="详细描述工作内容、要求、福利等" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="recruitLink">投递链接</label>
+        <input type="url" id="recruitLink" placeholder="https://... 或 mailto:hr@example.com">
+      </div>
+      <button type="submit" class="submit-btn">提交实习实践</button>
+    </form>
+
+    <div id="notice" style="display:none;"></div>
+  </main>
+
+  <script>
+    (function() {
+      'use strict';
+      var IS_FILE_MODE = window.location.protocol === 'file:';
+      var LOGIN_PAGE = IS_FILE_MODE ? 'login.html' : '/login.html';
+      var HOME_PAGE = IS_FILE_MODE ? 'index.html' : '/';
+
+      document.getElementById('publishBackHomeLink').href = HOME_PAGE;
+
+      var authScript = document.createElement('script');
+      authScript.src = IS_FILE_MODE ? 'public/assets/nav-auth.js' : '/assets/nav-auth.js';
+      document.body.appendChild(authScript);
+
+      // URL 参数自动切换 tab
+      var params = new URLSearchParams(window.location.search);
+      var typeParam = params.get('type');
+      if (typeParam === 'recruit') {
+        document.querySelector('.tab[data-type="recruit"]').click();
+      }
+
+      // 检查登录状态
+      if (!window.AuthState || !window.AuthState.isLoggedIn()) {
+        var dest = IS_FILE_MODE
+          ? 'publish.html' + window.location.search
+          : window.location.pathname + window.location.search;
+        window.location.href = LOGIN_PAGE + '?redirect=' + encodeURIComponent(dest);
+        return;
+      }
+
+      const tabs = document.querySelectorAll('.tab');
+      const forms = document.querySelectorAll('.form-section');
+      const noticeEl = document.getElementById('notice');
+
+      // Tab 切换
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          const type = tab.dataset.type;
+          forms.forEach(f => {
+            f.classList.toggle('active', f.id === type + 'Form');
+          });
+        });
+      });
+
+      // 提交活动
+      document.getElementById('eventForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await submit('event');
+      });
+
+      // 提交实习
+      document.getElementById('recruitForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await submit('recruit');
+      });
+
+      async function submit(type) {
+        const btn = document.querySelector('.form-section.active .submit-btn');
+        btn.disabled = true;
+        btn.textContent = '提交中...';
+        showNotice('info', '正在提交...');
+
+        const token = window.AuthState.getToken();
+        const user = window.AuthState.getUser();
+
+        let payload = {};
+        if (type === 'event') {
+          payload = {
+            title: document.getElementById('eventTitle').value.trim(),
+            meta: document.getElementById('eventMeta').value.trim(),
+            desc: document.getElementById('eventDesc').value.trim(),
+            eventDate: document.getElementById('eventDate').value.trim(),
+            eventLocation: document.getElementById('eventLocation').value.trim(),
+            link: document.getElementById('eventLink').value.trim(),
+            image: '',
+            userName: user?.nickname || user?.email || '',
+            userOrg: user?.org_name || ''
+          };
+        } else {
+          payload = {
+            title: document.getElementById('recruitTitle').value.trim(),
+            meta: document.getElementById('recruitMeta').value.trim(),
+            desc: document.getElementById('recruitDesc').value.trim(),
+            opportunityType: document.getElementById('recruitType').value,
+            link: document.getElementById('recruitLink').value.trim(),
+            image: '',
+            userName: user?.nickname || user?.email || '',
+            userOrg: user?.org_name || ''
+          };
+        }
+
+        try {
+          const res = await fetch('/api/submit/' + type, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json();
+          if (data.success) {
+            showNotice('success', data.message || '提交成功！等待管理员审核。');
+            document.querySelector('.form-section.active').reset();
+          } else {
+            showNotice('error', data.message || '提交失败');
+          }
+        } catch (err) {
+          showNotice('error', '网络错误：' + err.message);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = type === 'event' ? '提交活动' : '提交实习实践';
+        }
+      }
+
+      function showNotice(type, text) {
+        noticeEl.style.display = 'block';
+        noticeEl.className = 'notice ' + type;
+        noticeEl.textContent = text;
+      }
+    })();
+  </script>
+</body>
+</html>
