@@ -231,21 +231,27 @@ async function migrateUserEvents(connection) {
   
   const sql = `
     INSERT INTO user_events (
-      user_id, title, meta, description, image_url, link_url, 
-      status, reject_reason, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      user_id, user_name, user_org, title, meta, description, image_url, link_url,
+      event_date, event_location, max_participants, status, reject_reason, reviewed_at, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   
   for (const item of data) {
     await connection.query(sql, [
       item.user_id || null,
+      item.user_name || "",
+      item.user_org || "",
       item.title || "",
       item.meta || "",
-      item.description || "",
-      item.image_url || "",
-      item.link_url || "",
+      item.desc || item.description || "",
+      item.image || item.image_url || "",
+      item.link || item.link_url || "",
+      item.event_date || "",
+      item.event_location || "",
+      item.max_participants || 0,
       item.status || "pending",
-      item.reject_reason || "",
+      item.review_note || item.reject_reason || "",
+      item.reviewed_at || null,
       item.created_at || new Date(),
     ]);
   }
@@ -273,21 +279,25 @@ async function migrateUserRecruits(connection) {
   
   const sql = `
     INSERT INTO user_recruits (
-      user_id, title, meta, description, image_url, link_url, 
-      status, reject_reason, created_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      user_id, user_name, user_org, title, meta, description, image_url, link_url,
+      opportunity_type, status, reject_reason, reviewed_at, created_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   
   for (const item of data) {
     await connection.query(sql, [
       item.user_id || null,
+      item.user_name || "",
+      item.user_org || "",
       item.title || "",
       item.meta || "",
-      item.description || "",
-      item.image_url || "",
-      item.link_url || "",
+      item.desc || item.description || "",
+      item.image || item.image_url || "",
+      item.link || item.link_url || "",
+      item.opportunity_type || "internship",
       item.status || "pending",
-      item.reject_reason || "",
+      item.review_note || item.reject_reason || "",
+      item.reviewed_at || null,
       item.created_at || new Date(),
     ]);
   }

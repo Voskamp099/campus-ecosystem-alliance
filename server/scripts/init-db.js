@@ -30,6 +30,29 @@ const REQUIRED_COLUMNS = {
     ["is_admin", "BOOLEAN NOT NULL DEFAULT FALSE"],
     ["status", "ENUM('active','inactive','banned') NOT NULL DEFAULT 'active'"],
   ],
+  user_events: [
+    ["user_name", "VARCHAR(128) NOT NULL DEFAULT ''"],
+    ["user_org", "VARCHAR(255) NOT NULL DEFAULT ''"],
+    ["event_date", "VARCHAR(64) NOT NULL DEFAULT ''"],
+    ["event_location", "VARCHAR(255) NOT NULL DEFAULT ''"],
+    ["max_participants", "INT UNSIGNED NOT NULL DEFAULT 0"],
+    ["reviewed_at", "TIMESTAMP NULL"],
+  ],
+  user_recruits: [
+    ["user_name", "VARCHAR(128) NOT NULL DEFAULT ''"],
+    ["user_org", "VARCHAR(255) NOT NULL DEFAULT ''"],
+    ["opportunity_type", "VARCHAR(32) NOT NULL DEFAULT 'internship'"],
+    ["reviewed_at", "TIMESTAMP NULL"],
+  ],
+  admin_logs: [
+    ["admin_id", "BIGINT UNSIGNED NULL"],
+    ["admin_name", "VARCHAR(128) NOT NULL DEFAULT ''"],
+    ["action", "VARCHAR(64) NOT NULL DEFAULT ''"],
+    ["target_type", "VARCHAR(64) NOT NULL DEFAULT ''"],
+    ["target_id", "BIGINT UNSIGNED NULL"],
+    ["detail", "TEXT NULL"],
+    ["ip", "VARCHAR(64) NOT NULL DEFAULT ''"],
+  ],
 };
 
 async function runSchemaSql() {

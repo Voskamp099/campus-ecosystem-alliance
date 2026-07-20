@@ -96,14 +96,20 @@ CREATE TABLE IF NOT EXISTS delivery_records (
 -- ========== 用户发布的活动表 ==========
 CREATE TABLE IF NOT EXISTS user_events (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id BIGINT UNSIGNED NULL,
-  title VARCHAR(255) NOT NULL,
-  meta VARCHAR(255) NOT NULL DEFAULT '',
-  description TEXT NULL,
-  image_url VARCHAR(1024) NOT NULL DEFAULT '',
-  link_url VARCHAR(1024) NOT NULL DEFAULT '',
-  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
-  reject_reason VARCHAR(500) NOT NULL DEFAULT '',
+  user_id BIGINT UNSIGNED NULL COMMENT '发布者用户ID',
+  user_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT '发布者昵称（冗余快照）',
+  user_org VARCHAR(255) NOT NULL DEFAULT '' COMMENT '发布者单位（冗余快照）',
+  title VARCHAR(255) NOT NULL COMMENT '活动标题',
+  meta VARCHAR(255) NOT NULL DEFAULT '' COMMENT '标签/来源',
+  description TEXT NULL COMMENT '活动描述',
+  image_url VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '封面图',
+  link_url VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '报名/详情链接',
+  event_date VARCHAR(64) NOT NULL DEFAULT '' COMMENT '活动时间（文本）',
+  event_location VARCHAR(255) NOT NULL DEFAULT '' COMMENT '活动地点',
+  max_participants INT UNSIGNED NOT NULL DEFAULT 0 COMMENT '人数上限（0=不限）',
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending' COMMENT '审核状态',
+  reject_reason VARCHAR(500) NOT NULL DEFAULT '' COMMENT '拒绝原因（同 review_note）',
+  reviewed_at TIMESTAMP NULL COMMENT '审核时间',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -114,20 +120,41 @@ CREATE TABLE IF NOT EXISTS user_events (
 -- ========== 用户发布的实习实践表 ==========
 CREATE TABLE IF NOT EXISTS user_recruits (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  user_id BIGINT UNSIGNED NULL,
-  title VARCHAR(255) NOT NULL,
-  meta VARCHAR(255) NOT NULL DEFAULT '',
-  description TEXT NULL,
-  image_url VARCHAR(1024) NOT NULL DEFAULT '',
-  link_url VARCHAR(1024) NOT NULL DEFAULT '',
-  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
-  reject_reason VARCHAR(500) NOT NULL DEFAULT '',
+  user_id BIGINT UNSIGNED NULL COMMENT '发布者用户ID',
+  user_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT '发布者昵称（冗余快照）',
+  user_org VARCHAR(255) NOT NULL DEFAULT '' COMMENT '发布者单位（冗余快照）',
+  title VARCHAR(255) NOT NULL COMMENT '职位标题',
+  meta VARCHAR(255) NOT NULL DEFAULT '' COMMENT '标签/来源',
+  description TEXT NULL COMMENT '职位描述',
+  image_url VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '封面图',
+  link_url VARCHAR(1024) NOT NULL DEFAULT '' COMMENT '投递/详情链接',
+  opportunity_type VARCHAR(32) NOT NULL DEFAULT 'internship' COMMENT '类型: internship/practice/project',
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending' COMMENT '审核状态',
+  reject_reason VARCHAR(500) NOT NULL DEFAULT '' COMMENT '拒绝原因（同 review_note）',
+  reviewed_at TIMESTAMP NULL COMMENT '审核时间',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_status_created (status, created_at),
   KEY idx_user_created (user_id, created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户发布的实习实践表';
+
+-- ========== 管理员操作日志表 ==========
+CREATE TABLE IF NOT EXISTS admin_logs (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  admin_id BIGINT UNSIGNED NULL COMMENT '管理员用户ID',
+  admin_name VARCHAR(128) NOT NULL DEFAULT '' COMMENT '管理员名称',
+  action VARCHAR(64) NOT NULL DEFAULT '' COMMENT '操作类型: create/update/delete/approve/reject/login/export/import',
+  target_type VARCHAR(64) NOT NULL DEFAULT '' COMMENT '操作对象类型',
+  target_id BIGINT UNSIGNED NULL COMMENT '操作对象ID',
+  detail TEXT NULL COMMENT '操作详情',
+  ip VARCHAR(64) NOT NULL DEFAULT '' COMMENT 'IP地址',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_admin_id_created (admin_id, created_at),
+  KEY idx_action_created (action, created_at),
+  KEY idx_target (target_type, target_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='管理员操作日志表';
 
 -- ========== 内容管理表 ==========
 CREATE TABLE IF NOT EXISTS content_items (

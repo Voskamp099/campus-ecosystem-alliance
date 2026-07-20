@@ -10,7 +10,7 @@ import {
   createDeliveryRecord
 } from "../services/user-center-service.js";
 import { uploadAvatar, deleteOldAvatar } from "../services/avatar-service.js";
-import { pool } from "../db.js";
+import { pool, isDatabaseAvailable } from "../db.js";
 import { logger } from "../utils/logger.js";
 
 const router = Router();
@@ -33,6 +33,10 @@ router.post("/user/avatar", verifyToken, async (req, res, next) => {
     // 验证文件大小（最大 5MB）
     if (avatar.size > 5 * 1024 * 1024) {
       return res.status(400).json({ success: false, message: "图片大小不能超过 5MB" });
+    }
+
+    if (!(await isDatabaseAvailable())) {
+      return res.status(503).json({ success: false, message: "数据库暂不可用，请稍后再试" });
     }
 
     // 获取旧头像
@@ -113,6 +117,10 @@ router.put("/user/profile", verifyToken, async (req, res, next) => {
       return res.status(400).json({ success: false, message: "没有要更新的字段" });
     }
 
+    if (!(await isDatabaseAvailable())) {
+      return res.status(503).json({ success: false, message: "数据库暂不可用，请稍后再试" });
+    }
+
     values.push(userId);
     await pool.query(`UPDATE users SET ${updates.join(", ")} WHERE id = ?`, values);
 
@@ -129,6 +137,10 @@ router.put("/user/profile", verifyToken, async (req, res, next) => {
 router.get("/user/profile", verifyToken, async (req, res, next) => {
   try {
     const userId = req.user.userId;
+
+    if (!(await isDatabaseAvailable())) {
+      return res.status(503).json({ success: false, message: "数据库暂不可用，请稍后再试" });
+    }
 
     const [rows] = await pool.query(
       "SELECT id, email, nickname, bio, phone, org_name, org_role, avatar_url, created_at FROM users WHERE id = ?",
