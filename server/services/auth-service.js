@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { pool, isDatabaseAvailable } from "../db.js";
+import { pool, isDatabaseAvailable, invalidateDbCache } from "../db.js";
 import { getConfig } from "../config.js";
 import { loadJson, saveJson } from "./json-store.js";
 import { logger } from "../utils/logger.js";
@@ -34,7 +34,7 @@ function normalizeIdentifier(identifier) {
 function sanitizeUser(user) {
   if (!user) return null;
   const { password_hash, verification_token, reset_token, reset_token_expires, is_admin, ...safe } = user;
-  if (is_admin === 1) safe.isAdmin = true;
+  safe.isAdmin = !!is_admin;
   return safe;
 }
 
@@ -60,14 +60,19 @@ export async function findUserByEmail(email) {
   if (!normalizedEmail) return null;
 
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query(
-      `SELECT id, email, password_hash, nickname, avatar_url, phone,
-              real_name, org_name, org_role, email_verified,
-              last_login_at, status, created_at
-       FROM users WHERE email = ? AND status != 'banned'`,
-      [normalizedEmail]
-    );
-    return rows[0] || null;
+    try {
+      const [rows] = await pool.query(
+        `SELECT id, email, password_hash, nickname, avatar_url, phone,
+                real_name, org_name, org_role, email_verified,
+                last_login_at, status, created_at
+         FROM users WHERE email = ? AND status != 'banned'`,
+        [normalizedEmail]
+      );
+      return rows[0] || null;
+    } catch (dbErr) {
+      invalidateDbCache();
+      throw dbErr;
+    }
   }
 
   // 降级：JSON 文件
@@ -81,16 +86,21 @@ export async function findUserForLogin(identifier) {
   if (!rawIdentifier) return null;
 
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query(
-      `SELECT id, email, password_hash, nickname, avatar_url, phone,
-              real_name, org_name, org_role, email_verified,
-              last_login_at, status, created_at, is_admin
-       FROM users
-       WHERE (email = ? OR nickname = ?) AND status != 'banned'
-       LIMIT 1`,
-      [normalizedEmail, rawIdentifier]
-    );
-    return rows[0] || null;
+    try {
+      const [rows] = await pool.query(
+        `SELECT id, email, password_hash, nickname, avatar_url, phone,
+                real_name, org_name, org_role, email_verified,
+                last_login_at, status, created_at, is_admin
+         FROM users
+         WHERE (email = ? OR nickname = ?) AND status != 'banned'
+         LIMIT 1`,
+        [normalizedEmail, rawIdentifier]
+      );
+      return rows[0] || null;
+    } catch (dbErr) {
+      invalidateDbCache();
+      throw dbErr;
+    }
   }
 
   const users = loadUsers();
@@ -102,14 +112,19 @@ export async function findUserForLogin(identifier) {
 
 export async function findUserById(id) {
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query(
-      `SELECT id, email, nickname, avatar_url, phone,
-              real_name, org_name, org_role, email_verified,
-              last_login_at, status, created_at
-       FROM users WHERE id = ? AND status = 'active'`,
-      [id]
-    );
-    return rows[0] || null;
+    try {
+      const [rows] = await pool.query(
+        `SELECT id, email, nickname, avatar_url, phone,
+                real_name, org_name, org_role, email_verified,
+                last_login_at, status, created_at, is_admin
+         FROM users WHERE id = ? AND status = 'active'`,
+        [id]
+      );
+      return rows[0] || null;
+    } catch (dbErr) {
+      invalidateDbCache();
+      throw dbErr;
+    }
   }
 
   // 降级：JSON 文件
@@ -127,7 +142,7 @@ export async function createUser(payload) {
   const normalizedEmail = normalizeEmail(email);
   if (!normalizedEmail) throw new Error("请填写邮箱");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) throw new Error("邮箱格式不正确");
-  if (!password || password.length < 6) throw new Error("密码至少需要6位");
+  if (!password || password.length < 8) throw new Error("密码至少需要8位");
 
   const existing = await findUserByEmail(normalizedEmail);
   if (existing) throw new Error("该邮箱已被注册");
@@ -265,7 +280,7 @@ export async function createPasswordResetToken(email) {
 }
 
 export async function resetPassword(token, newPassword) {
-  if (!newPassword || newPassword.length < 6) throw new Error("密码至少需要6位");
+  if (!newPassword || newPassword.length < 8) throw new Error("密码至少需要8位");
   const user = await findUserByResetToken(token);
   if (!user) throw new Error("重置链接无效或已过期");
 
@@ -295,7 +310,7 @@ export async function resetPassword(token, newPassword) {
 }
 
 export async function changePassword(userId, oldPassword, newPassword) {
-  if (!newPassword || newPassword.length < 6) throw new Error("新密码至少需要6位");
+  if (!newPassword || newPassword.length < 8) throw new Error("新密码至少需要8位");
 
   if (await isDatabaseAvailable()) {
     const [rows] = await pool.query(

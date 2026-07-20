@@ -10,7 +10,8 @@ import {
   updateUserProfile,
   findUserById,
   logLoginAttempt,
-  formatUserResponse
+  formatUserResponse,
+  verifyToken
 } from "../services/auth-service.js";
 import { getConfig } from "../config.js";
 import { loginLimiter, registerLimiter } from "../utils/rate-limiter.js";
@@ -35,7 +36,6 @@ function generateToken(user) {
     { 
       userId: user.id,
       email: user.email,
-      nickname: user.nickname,
       role: (user.isAdmin || user.is_admin) ? "admin" : "user"
     },
     config.jwtSecret,
@@ -56,7 +56,8 @@ router.post("/register", registerLimiter, validators.register, async (req, res) 
       phone,
       realName,
       orgName,
-      orgRole
+      orgRole,
+      isAdmin
     });
 
     const token = generateToken(result.user);
@@ -223,21 +224,9 @@ router.post("/reset-password", async (req, res) => {
 });
 
 // 获取当前用户信息（需要认证）
-router.get("/me", async (req, res) => {
+router.get("/me", verifyToken, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "请先登录"
-      });
-    }
-
-    const token = authHeader.slice(7);
-    const config = getConfig();
-    const decoded = jwt.verify(token, config.jwtSecret);
-
-    const user = await findUserById(decoded.userId);
+    const user = await findUserById(req.user.userId);
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -250,12 +239,6 @@ router.get("/me", async (req, res) => {
       user: formatUserResponse(user)
     });
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({
-        success: false,
-        message: "登录已过期，请重新登录"
-      });
-    }
     res.status(401).json({
       success: false,
       message: "登录状态无效"
@@ -264,21 +247,9 @@ router.get("/me", async (req, res) => {
 });
 
 // 更新用户信息（需要认证）
-router.put("/profile", async (req, res) => {
+router.put("/profile", verifyToken, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "请先登录"
-      });
-    }
-
-    const token = authHeader.slice(7);
-    const config = getConfig();
-    const decoded = jwt.verify(token, config.jwtSecret);
-
-    const user = await updateUserProfile(decoded.userId, req.body);
+    const user = await updateUserProfile(req.user.userId, req.body);
 
     res.json({
       success: true,
@@ -286,12 +257,6 @@ router.put("/profile", async (req, res) => {
       user: formatUserResponse(user)
     });
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({
-        success: false,
-        message: "登录已过期"
-      });
-    }
     res.status(400).json({
       success: false,
       message: error.message
@@ -300,34 +265,16 @@ router.put("/profile", async (req, res) => {
 });
 
 // 修改密码（需要认证）
-router.put("/change-password", async (req, res) => {
+router.put("/change-password", verifyToken, async (req, res) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "请先登录"
-      });
-    }
-
-    const token = authHeader.slice(7);
-    const config = getConfig();
-    const decoded = jwt.verify(token, config.jwtSecret);
-
     const { oldPassword, newPassword } = req.body;
-    await changePassword(decoded.userId, oldPassword, newPassword);
+    await changePassword(req.user.userId, oldPassword, newPassword);
 
     res.json({
       success: true,
       message: "密码修改成功"
     });
   } catch (error) {
-    if (error.name === "TokenExpiredError") {
-      return res.status(401).json({
-        success: false,
-        message: "登录已过期"
-      });
-    }
     res.status(400).json({
       success: false,
       message: error.message

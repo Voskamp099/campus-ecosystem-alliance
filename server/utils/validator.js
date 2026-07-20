@@ -100,8 +100,8 @@ export const validators = {
       .withMessage("邮箱长度不能超过 255 个字符"),
 
     body("password")
-      .isLength({ min: 6, max: 100 })
-      .withMessage("密码长度必须在 6-100 个字符之间")
+      .isLength({ min: 8, max: 100 })
+      .withMessage("密码长度必须在 8-100 个字符之间")
       .matches(/^(?=.*[a-zA-Z])(?=.*\d)/)
       .withMessage("密码必须包含字母和数字"),
 

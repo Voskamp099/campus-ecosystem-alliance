@@ -9,7 +9,7 @@ export const pool = mysql.createPool({
   password: config.mysql.password,
   database: config.mysql.database,
   waitForConnections: true,
-  connectionLimit: 10,
+  connectionLimit: config.mysql.connectionLimit,
   namedPlaceholders: false
 });
 
@@ -28,6 +28,11 @@ export async function isDatabaseAvailable() {
     logger.warn({ err: e }, "MySQL 不可用，将使用内存存储降级模式");
   }
   return _dbAvailable;
+}
+
+// 清除可用性缓存，使下一次 isDatabaseAvailable() 重新探测
+export function invalidateDbCache() {
+  _dbAvailable = null;
 }
 
 // 每 60 秒重新检测 MySQL 可用性

@@ -22,6 +22,7 @@ import userCenterRouter from "./routes/user-center.js";
 import authRouter from "./routes/auth.js";
 import userSubmissionRouter from "./routes/user-submissions.js";
 import { swaggerSpec } from "./swagger.js";
+import { verifyToken } from "./services/auth-service.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,9 @@ const rootDir = path.resolve(__dirname, "..");
 initSentry();
 
 const app = express();
+
+// 信任反向代理（Nginx），使 req.ip / X-Forwarded-For 正确生效
+app.set("trust proxy", 1);
 
 // ── Sentry 请求追踪 ────────────────────────────────────────────────
 app.use(sentryRequestHandler());
@@ -218,13 +222,13 @@ app.get("/ready", readinessCheck); // Kubernetes Readiness Probe
 app.get("/live", livenessCheck); // Kubernetes Liveness Probe
 
 // 性能指标（仅管理员）
-app.get("/api/metrics", async (req, res, next) => {
-  try {
-    const metrics = await getPerformanceMetrics();
-    res.json(metrics);
-  } catch (error) {
-    next(error);
+app.get("/api/metrics", verifyToken, (req, res, next) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "需要管理员权限" });
   }
+  getPerformanceMetrics()
+    .then((metrics) => res.json(metrics))
+    .catch(next);
 });
 
 // robots.txt
@@ -274,10 +278,11 @@ app.use(errorHandler);
 // 启动时初始化/自愈数据库结构（MySQL 不可用时仅告警，不阻断启动，JSON 降级仍可用）
 initDatabase()
   .then(() => logger.info("数据库结构已就绪"))
-  .catch((err) => logger.warn({ err }, "数据库初始化跳过（MySQL 不可用，将使用 JSON 降级）"));
-
-app.listen(config.port, () => {
-  logger.info(`Alliance website server running at http://localhost:${config.port}`);
-  logger.info(`Environment: ${config.env}`);
-  logger.info(`Database: ${config.mysql.host}:${config.mysql.port}/${config.mysql.database}`);
-});
+  .catch((err) => logger.warn({ err }, "数据库初始化跳过（MySQL 不可用，将使用 JSON 降级）"))
+  .finally(() => {
+    app.listen(config.port, () => {
+      logger.info(`Alliance website server running at http://localhost:${config.port}`);
+      logger.info(`Environment: ${config.env}`);
+      logger.info(`Database: ${config.mysql.host}:${config.mysql.port}/${config.mysql.database}`);
+    });
+  });

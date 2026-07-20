@@ -39,7 +39,7 @@ async function migrateData() {
     logger.info("数据迁移完成");
     
   } catch (error) {
-    await connection.rollback();
+    await connection.rollback().catch(() => {});
     logger.error({ err: error }, "数据迁移失败");
     throw error;
   } finally {
@@ -67,20 +67,28 @@ async function migrateUsers(connection) {
   
   const sql = `
     INSERT INTO users (
-      id, email, password_hash, nickname, phone, real_name, 
-      org_name, org_role, email_verified, is_admin, status, 
-      created_at, last_login_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      id, email, password_hash, nickname, avatar_url, phone, real_name, 
+      org_name, org_role, bio, email_verified, email_verified_at, 
+      verification_token, reset_token, reset_token_expires, is_admin, 
+      status, login_count, created_at, last_login_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ON DUPLICATE KEY UPDATE
       password_hash = VALUES(password_hash),
       nickname = VALUES(nickname),
+      avatar_url = VALUES(avatar_url),
       phone = VALUES(phone),
       real_name = VALUES(real_name),
       org_name = VALUES(org_name),
       org_role = VALUES(org_role),
+      bio = VALUES(bio),
       email_verified = VALUES(email_verified),
+      email_verified_at = VALUES(email_verified_at),
+      verification_token = VALUES(verification_token),
+      reset_token = VALUES(reset_token),
+      reset_token_expires = VALUES(reset_token_expires),
       is_admin = VALUES(is_admin),
       status = VALUES(status),
+      login_count = VALUES(login_count),
       last_login_at = VALUES(last_login_at)
   `;
   
@@ -90,13 +98,20 @@ async function migrateUsers(connection) {
       user.email,
       user.password_hash,
       user.nickname || "",
+      user.avatar_url || "",
       user.phone || "",
       user.real_name || "",
       user.org_name || "",
       user.org_role || "",
+      user.bio || null,
       user.email_verified || false,
+      user.email_verified_at || null,
+      user.verification_token || "",
+      user.reset_token || "",
+      user.reset_token_expires || null,
       user.is_admin || false,
       user.status || "active",
+      user.login_count || 0,
       user.created_at || new Date(),
       user.last_login_at || null,
     ]);
@@ -330,13 +345,15 @@ async function migrateDirectoryApplications(connection) {
   logger.info(`对接申请迁移完成，共 ${data.length} 条记录`);
 }
 
-// 执行迁移
-migrateData()
-  .then(() => {
-    logger.info("迁移脚本执行完成");
-    process.exit(0);
-  })
-  .catch((error) => {
-    logger.error({ err: error }, "迁移脚本执行失败");
-    process.exit(1);
-  });
+// 执行迁移（仅作为脚本直接运行时执行）
+if (import.meta.url === `file://${process.argv[1]}`) {
+  migrateData()
+    .then(() => {
+      logger.info("迁移脚本执行完成");
+      process.exit(0);
+    })
+    .catch((error) => {
+      logger.error({ err: error }, "迁移脚本执行失败");
+      process.exit(1);
+    });
+}

@@ -1,6 +1,5 @@
 # Dependencies
 node_modules/
-package-lock.json
 
 # Environment variables
 .env
@@ -43,9 +42,10 @@ uploads/
 public/uploads/*
 !public/uploads/.gitkeep
 
-# Database backups
-*.sql
+# Database backups (保留 database/ 下的 schema 和 migrations，仅忽略备份文件)
+backup_*.sql
 *.sql.gz
+db_backup_*.sql
 
 # PM2
 .pm2/
