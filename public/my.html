@@ -13,7 +13,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -1091,17 +1091,17 @@
 
       if (window.AllianceBootstrap && window.AllianceBootstrap.loadScripts) {
         window.AllianceBootstrap.loadScripts([
-          "assets/nav-auth.js?v=202607211700",
-          "assets/auth-guard.js?v=20260420",
-          "assets/user-center.js?v=202607211600"
+          "assets/nav-auth.js?v=202607211850",
+          "assets/auth-guard.js?v=202607211850",
+          "assets/user-center.js?v=202607211850"
         ]);
         return;
       }
 
       [
-        isFileMode ? "public/assets/nav-auth.js?v=202607211700" : "/assets/nav-auth.js?v=202607211700",
-        isFileMode ? "public/assets/auth-guard.js?v=20260420" : "/assets/auth-guard.js?v=20260420",
-        isFileMode ? "public/assets/user-center.js?v=202607211600" : "/assets/user-center.js?v=202607211600"
+        isFileMode ? "assets/nav-auth.js?v=202607211850" : "/assets/nav-auth.js?v=202607211850",
+        isFileMode ? "assets/auth-guard.js?v=202607211850" : "/assets/auth-guard.js?v=202607211850",
+        isFileMode ? "assets/user-center.js?v=202607211850" : "/assets/user-center.js?v=202607211850"
       ].forEach(function (src) {
         var script = document.createElement("script");
         script.src = src;

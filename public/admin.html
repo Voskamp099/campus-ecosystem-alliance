@@ -8,7 +8,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -567,8 +567,8 @@
     (function loadAdminScript() {
       const script = document.createElement("script");
       script.defer = true;
-      const basePath = window.location.protocol === "file:" ? "public/assets/admin.js" : "/assets/admin.js";
-      script.src = basePath + "?v=202607211700";
+      const basePath = window.location.protocol === "file:" ? "assets/admin.js" : "/assets/admin.js";
+      script.src = basePath + "?v=202607211710";
       document.body.appendChild(script);
     })();
   </script>

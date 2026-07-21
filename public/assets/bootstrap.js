@@ -5,7 +5,9 @@
 
   function getAssetPath(path) {
     var cleanPath = String(path || "").replace(/^\/+/, "");
-    return IS_FILE_MODE ? "public/" + cleanPath : "/" + cleanPath;
+    // file:// 模式下 HTML 本身就位于 public/ 目录，相对路径直接以 assets/ 开头即可；
+    // 之前拼接成 public/assets/... 会导致浏览器解析为 public/public/assets/... 而 404。
+    return IS_FILE_MODE ? cleanPath : "/" + cleanPath;
   }
 
   function appendHeadLink(options) {

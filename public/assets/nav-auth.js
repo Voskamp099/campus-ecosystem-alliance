@@ -150,8 +150,14 @@
   };
 
   /* ====== 初始化 ====== */
-  document.addEventListener('DOMContentLoaded', async () => {
+  // 兼容动态注入场景（DOMContentLoaded 可能已触发）
+  async function bootNavAuth() {
     await verifyToken();
     updateNav();
-  });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootNavAuth);
+  } else {
+    bootNavAuth();
+  }
 })();

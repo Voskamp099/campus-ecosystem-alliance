@@ -13,7 +13,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -192,7 +192,7 @@
     (function loadVerifyAuthScript() {
       const script = document.createElement("script");
       script.defer = true;
-      script.src = window.location.protocol === "file:" ? "public/assets/nav-auth.js" : "/assets/nav-auth.js";
+      script.src = window.location.protocol === "file:" ? "assets/nav-auth.js" : "/assets/nav-auth.js";
       document.body.appendChild(script);
     })();
   </script>

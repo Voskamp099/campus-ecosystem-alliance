@@ -12,7 +12,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -142,7 +142,7 @@
       document.getElementById('publishBackHomeLink').href = HOME_PAGE;
 
       var authScript = document.createElement('script');
-      authScript.src = IS_FILE_MODE ? 'public/assets/nav-auth.js' : '/assets/nav-auth.js';
+      authScript.src = IS_FILE_MODE ? 'assets/nav-auth.js' : '/assets/nav-auth.js';
       document.body.appendChild(authScript);
 
       // URL 参数自动切换 tab

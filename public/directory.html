@@ -13,7 +13,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -100,8 +100,8 @@
     .hero-title {
       margin: 0 0 12px;
       font-family: "Noto Serif SC", serif;
-      font-size: clamp(30px, 4vw, 48px);
-      line-height: 1.12;
+      font-size: clamp(28px, 3.5vw, 40px);
+      line-height: 1.15;
     }
 
     .hero-desc {
@@ -360,7 +360,7 @@
     (function loadDirectoryScript() {
       const script = document.createElement("script");
       script.defer = true;
-      script.src = window.location.protocol === "file:" ? "public/assets/directory-hub.js" : "/assets/directory-hub.js";
+      script.src = window.location.protocol === "file:" ? "assets/directory-hub.js" : "/assets/directory-hub.js";
       document.body.appendChild(script);
     })();
   </script>
@@ -368,7 +368,7 @@
   (function loadDirectoryAuthScript() {
     const script = document.createElement("script");
     script.defer = true;
-    script.src = window.location.protocol === "file:" ? "public/assets/nav-auth.js" : "/assets/nav-auth.js";
+    script.src = window.location.protocol === "file:" ? "assets/nav-auth.js" : "/assets/nav-auth.js";
     document.body.appendChild(script);
   })();
 </script>

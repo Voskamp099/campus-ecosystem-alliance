@@ -884,9 +884,9 @@ function renderUserStats() {
     { label: "本月新增", value: stats.newThisMonth || 0, icon: "\u{1F4C6}", color: "#22d3ee" },
     { label: "近期登录", value: stats.recentLogin || 0, icon: "\u{1F50D}", color: "#fb923c" }
   ];
-  grid.innerHTML = '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:8px 0;">' +
+  grid.innerHTML = '<div class="stats-grid" style="display:flex;gap:14px;flex-wrap:nowrap;overflow-x:auto;padding:8px 0;">' +
     cards.map(c => (
-      '<div class="card" style="padding:24px;text-align:center;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,0.04);">' +
+      '<div class="card" style="flex:1 1 0;min-width:128px;padding:18px 12px;text-align:center;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,0.04);">' +
         '<div style="font-size:36px;margin-bottom:12px;">' + c.icon + '</div>' +
         '<div style="font-size:32px;font-weight:800;color:' + c.color + ';">' + escapeHTML(String(c.value)) + '</div>' +
         '<div style="color:var(--text-muted);font-size:14px;margin-top:8px;">' + escapeHTML(c.label) + '</div>' +
@@ -936,22 +936,25 @@ function renderUsers() {
         : '<span style="color:#fbbf24;">停用</span>';
     const adminBadge = u.isAdmin ? ' <span style="color:#fbbf24;font-weight:700;">\u{1F511} 管理员</span>' : '';
     return '<tr>' +
-      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + escapeHTML(String(u.id)) + '</td>' +
-      '<td style="padding:8px 12px;">' + escapeHTML(u.email || "-") + adminBadge + '</td>' +
-      '<td style="padding:8px 12px;">' + escapeHTML(u.nickname || "-") + '</td>' +
-      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.phone || "-") + '</td>' +
-      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.orgName || "-") + '</td>' +
-      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.orgRole || "-") + '</td>' +
-      '<td style="padding:8px 12px;font-size:12px;">' + verified + '</td>' +
-      '<td style="padding:8px 12px;font-size:12px;">' + status + '</td>' +
-      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + (u.createdAt ? new Date(u.createdAt).toLocaleString("zh-CN") : "-") + '</td>' +
-      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + (u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("zh-CN") : "从未登录") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;word-break:break-word;">' + escapeHTML(String(u.id)) + '</td>' +
+      '<td style="padding:8px 12px;word-break:break-word;">' + escapeHTML(u.email || "-") + adminBadge + '</td>' +
+      '<td style="padding:8px 12px;word-break:break-word;">' + escapeHTML(u.nickname || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;word-break:break-word;">' + escapeHTML(u.phone || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;word-break:break-word;">' + escapeHTML(u.orgName || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;word-break:break-word;">' + escapeHTML(u.orgRole || "-") + '</td>' +
+      '<td style="padding:8px 12px;font-size:12px;word-break:break-word;">' + verified + '</td>' +
+      '<td style="padding:8px 12px;font-size:12px;word-break:break-word;">' + status + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;word-break:break-word;">' + (u.createdAt ? new Date(u.createdAt).toLocaleString("zh-CN") : "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;word-break:break-word;">' + (u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("zh-CN") : "从未登录") + '</td>' +
     '</tr>';
   }).join("");
 
   grid.innerHTML = searchBox +
-    '<div style="overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.02);">' +
-      '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+    '<div style="border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;">' +
+        '<colgroup>' +
+          '<col style="width:5%"><col style="width:18%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:9%"><col style="width:7%"><col style="width:7%"><col style="width:9%"><col style="width:10%">' +
+        '</colgroup>' +
         '<thead>' +
           '<tr style="border-bottom:1px solid var(--line);text-align:left;">' +
             '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">ID</th>' +

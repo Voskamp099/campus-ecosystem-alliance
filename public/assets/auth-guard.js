@@ -18,19 +18,21 @@
   }
 
   /* ====== 初始化：检查登录状态，未登录立即跳转 ====== */
-  document.addEventListener('DOMContentLoaded', function () {
-    // 等待 nav-auth.js 的 AuthState 可用
-    function checkAuth() {
-      if (typeof window.AuthState !== 'undefined') {
-        if (!window.AuthState.isLoggedIn()) {
-          redirectToLogin();
-          return;
-        }
-      } else {
-        // AuthState 还没加载，100ms 后重试
-        setTimeout(checkAuth, 100);
+  // 兼容动态注入场景（DOMContentLoaded 可能已触发）
+  function checkAuth() {
+    if (typeof window.AuthState !== 'undefined') {
+      if (!window.AuthState.isLoggedIn()) {
+        redirectToLogin();
+        return;
       }
+    } else {
+      // AuthState 还没加载，100ms 后重试
+      setTimeout(checkAuth, 100);
     }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', checkAuth);
+  } else {
     checkAuth();
-  });
+  }
 })();

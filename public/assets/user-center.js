@@ -323,5 +323,11 @@
   }
 
   /* ====== 启动 ====== */
-  document.addEventListener('DOMContentLoaded', init);
+  // 注意：my.html 通过 AllianceBootstrap.loadScripts 动态注入本脚本，
+  // 此时 DOMContentLoaded 已经触发，必须用 readyState 兜底，否则 init 永不执行。
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();

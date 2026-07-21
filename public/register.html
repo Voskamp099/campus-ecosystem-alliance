@@ -13,7 +13,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -322,7 +322,7 @@
         <div class="terms">
           <label>
             <input type="checkbox" id="agreeTerms" required>
-            我已阅读并同意 <a href="/terms.html" target="_blank">服务条款</a> 和 <a href="/privacy.html" target="_blank">隐私政策</a>
+            我已阅读并同意 <a href="terms.html" class="legal-link" data-legal="terms">服务条款</a> 和 <a href="privacy.html" class="legal-link" data-legal="privacy">隐私政策</a>
           </label>
         </div>
 
@@ -332,6 +332,23 @@
       <div class="auth-footer">
         已有账号？<a href="login.html" id="registerLoginLink">立即登录</a>
       </div>
+    </div>
+  </div>
+
+  <!-- 法律条款弹窗（内联显示，不跳转新页面） -->
+  <style>
+    .legal-modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; background: rgba(4,10,19,0.78); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: 0.2s ease; z-index: 300; }
+    .legal-modal-overlay.open { opacity: 1; pointer-events: auto; }
+    .legal-modal-box { width: min(720px, 94vw); max-height: 92vh; display: flex; flex-direction: column; border-radius: 18px; overflow: hidden; background: linear-gradient(180deg, rgba(11,27,52,0.98), rgba(8,22,37,0.98)); border: 1px solid rgba(147,197,253,0.18); }
+    .legal-modal-close { width: 36px; height: 36px; border-radius: 12px; border: 1px solid rgba(147,197,253,0.18); background: rgba(255,255,255,0.06); color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+    .legal-modal-frame { width: 100%; height: 74vh; border: 0; background: #fff; }
+  </style>
+  <div class="legal-modal-overlay" id="legalModal" aria-hidden="true">
+    <div class="legal-modal-box">
+      <div style="display:flex;justify-content:flex-end;padding:10px 14px;flex-shrink:0;">
+        <button id="legalModalClose" type="button" aria-label="关闭" class="legal-modal-close">×</button>
+      </div>
+      <iframe id="legalFrame" title="法律条款" class="legal-modal-frame"></iframe>
     </div>
   </div>
 
@@ -353,6 +370,28 @@
 
       document.getElementById('registerBackHomeLink').href = IS_FILE_MODE ? 'index.html' : '/';
       document.getElementById('registerLoginLink').href = IS_FILE_MODE ? 'login.html' : '/login.html';
+
+      // 法律条款弹窗：点击“服务条款 / 隐私政策”在站内弹窗显示，不跳转新页面
+      (function initLegalModal() {
+        const overlay = document.getElementById('legalModal');
+        const frame = document.getElementById('legalFrame');
+        const closeBtn = document.getElementById('legalModalClose');
+        if (!overlay || !frame || !closeBtn) return;
+        const open = () => { overlay.classList.add('open'); overlay.setAttribute('aria-hidden', 'false'); };
+        const close = () => { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden', 'true'); };
+        closeBtn.addEventListener('click', close);
+        overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+        document.querySelectorAll('a.legal-link').forEach(link => {
+          link.addEventListener('click', e => {
+            e.preventDefault();
+            const kind = link.getAttribute('data-legal');
+            frame.src = IS_FILE_MODE
+              ? (kind === 'privacy' ? 'privacy.html' : 'terms.html')
+              : (kind === 'privacy' ? '/privacy.html' : '/terms.html');
+            open();
+          });
+        });
+      })();
 
       // 密码显示/隐藏
       const togglePassword = document.getElementById('togglePassword');
@@ -602,7 +641,7 @@
     }
     var script = document.createElement("script");
     script.src = window.location.protocol === "file:"
-      ? "public/assets/nav-auth.js?v=202604201933"
+      ? "assets/nav-auth.js?v=202604201933"
       : "/assets/nav-auth.js?v=202604201933";
     document.body.appendChild(script);
   })();

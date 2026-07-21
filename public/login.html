@@ -13,7 +13,7 @@
   <script>
     (function () {
       var script = document.createElement("script");
-      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.src = window.location.protocol === "file:" ? "assets/bootstrap.js" : "/assets/bootstrap.js";
       script.onload = function () { window.AllianceBootstrap.initHead(); };
       document.head.appendChild(script);
     })();
@@ -542,7 +542,7 @@
     }
     var script = document.createElement("script");
     script.src = window.location.protocol === "file:"
-      ? "public/assets/nav-auth.js?v=202604201933"
+      ? "assets/nav-auth.js?v=202604201933"
       : "/assets/nav-auth.js?v=202604201933";
     document.body.appendChild(script);
   })();

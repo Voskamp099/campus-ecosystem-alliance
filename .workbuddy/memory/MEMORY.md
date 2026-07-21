@@ -10,6 +10,14 @@
 - 服务层双持久化: MySQL优先, JSON降级 (唯独 user-submission-service 仅JSON)
 - 数据库: schema.sql (旧列名) vs migrations/001_user_center.sql (新列名) — 有冲突
 
+## 管理员权限 & 认证（重要）
+- **管理员账号不在 MySQL 里**：是 `server/config.js` 读 `.env` 的 `ADMIN_USERNAME/ADMIN_PASSWORD`
+  单账号（本项目 `.env` = admin + 强密码）。登录签发 JWT(role:admin)。
+- `users` 表有 `is_admin` 布尔列，是给用户打标记（二级路径），不是后台登录账号本身。
+- 前端 file 模式硬编码 gly/123456；server 模式必须用 `.env` 真实凭据，否则 401。
+- CSRF (`server/utils/csrf.js`)：`getSessionIdentifier` 必须只用 user-agent，
+  不能随 Authorization 头切到 JWT（否则所有鉴权后 POST 403）。2026-07-21 已修。
+
 ## 已发现的 Bug (2026-07-14 首次全面审计)
 ### Critical/High
 1. validator.js 字段名 mismatch (camelCase vs snake_case) — 验证器全是死代码
