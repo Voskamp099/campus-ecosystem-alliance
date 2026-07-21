@@ -7,6 +7,7 @@
 
   const AUTH_KEY = 'alliance_token';
   const USER_KEY = 'alliance_user';
+  const ADMIN_TOKEN_KEY = 'alliance_admin_token';
   const API_BASE = '';
   const IS_FILE_MODE = window.location.protocol === 'file:';
   const LOCAL_LOGIN_PAGE = 'login.html';
@@ -21,7 +22,7 @@
   }
 
   function getToken() {
-    try { return localStorage.getItem(AUTH_KEY); } catch { return null; }
+    try { return localStorage.getItem(AUTH_KEY) || localStorage.getItem(ADMIN_TOKEN_KEY); } catch { return null; }
   }
 
   function getUser() {
@@ -42,6 +43,7 @@
     try {
       localStorage.removeItem(AUTH_KEY);
       localStorage.removeItem(USER_KEY);
+      localStorage.removeItem(ADMIN_TOKEN_KEY);
     } catch {}
   }
 
@@ -77,6 +79,13 @@
   async function verifyToken() {
     const token = getToken();
     if (!token) { clearAuth(); return null; }
+
+    // 管理员专用 token（后台登录产生）：不通过用户接口校验，避免被当作无效用户清空
+    let adminToken = null;
+    try { adminToken = localStorage.getItem(ADMIN_TOKEN_KEY); } catch {}
+    if (token === adminToken) {
+      return getUser() || { isAdmin: true, nickname: '管理员', email: 'admin@alliance.local' };
+    }
 
     if (IS_FILE_MODE) {
       const user = getUser();

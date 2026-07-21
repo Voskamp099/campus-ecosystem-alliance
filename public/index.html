@@ -2250,12 +2250,12 @@
   <script>
     (function loadSiteScript() {
       if (window.AllianceBootstrap && window.AllianceBootstrap.loadScript) {
-        window.AllianceBootstrap.loadScript("assets/site.js");
+        window.AllianceBootstrap.loadScript("assets/site.js?v=202607211700");
         return;
       }
       const script = document.createElement("script");
       script.defer = true;
-      script.src = window.location.protocol === "file:" ? "public/assets/site.js" : "/assets/site.js";
+      script.src = window.location.protocol === "file:" ? "public/assets/site.js?v=202607211700" : "/assets/site.js?v=202607211700";
       document.body.appendChild(script);
     })();
   </script>

@@ -734,10 +734,46 @@ function bindStaticEvents() {
   });
 }
 
+/* ====== 服务条款 / 隐私政策 弹窗 ====== */
+function initLegalModal() {
+  if (document.getElementById("legalModal")) return;
+  const overlay = document.createElement("div");
+  overlay.className = "modal-overlay";
+  overlay.id = "legalModal";
+  overlay.setAttribute("aria-hidden", "true");
+  overlay.innerHTML =
+    '<div class="modal-box" style="padding:0;overflow:hidden;display:flex;flex-direction:column;' +
+      'background:linear-gradient(180deg, rgba(11,27,52,0.98), rgba(8,22,37,0.98));">' +
+      '<div style="display:flex;justify-content:flex-end;padding:10px 14px;flex-shrink:0;">' +
+        '<button id="legalModalClose" type="button" aria-label="关闭" ' +
+          'style="width:36px;height:36px;border-radius:12px;border:1px solid rgba(147,197,253,0.18);' +
+          'background:rgba(255,255,255,0.06);color:#fff;font-size:20px;cursor:pointer;line-height:1;">×</button>' +
+      '</div>' +
+      '<iframe id="legalFrame" title="法律条款" style="width:100%;height:74vh;border:0;background:#fff;"></iframe>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  const frame = overlay.querySelector("#legalFrame");
+  overlay.querySelector("#legalModalClose").addEventListener("click", () => closeModal("legalModal"));
+
+  document.querySelectorAll('a[href$="terms.html"], a[href$="privacy.html"]').forEach(link => {
+    link.addEventListener("click", event => {
+      event.preventDefault();
+      const href = link.getAttribute("href") || "";
+      const target = href.indexOf("privacy") !== -1
+        ? (IS_FILE_MODE ? "privacy.html" : "/privacy.html")
+        : (IS_FILE_MODE ? "terms.html" : "/terms.html");
+      frame.src = target;
+      openModal("legalModal");
+    });
+  });
+}
+
 async function init() {
   fixLocalAssetPaths();
   fixLocalPageLinks();
   fixSectionMoreLinks();
+  initLegalModal();
   await loadSiteContent();
   renderHeroVisual();
   renderCategories();

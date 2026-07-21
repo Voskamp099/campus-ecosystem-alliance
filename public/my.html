@@ -932,6 +932,8 @@
         document.getElementById("myBackHomeLink").href = "index.html";
         document.getElementById("publishEventLink").href = "publish.html?type=event";
         document.getElementById("publishRecruitLink").href = "publish.html?type=recruit";
+        var adminMenuItemLink = document.getElementById("adminMenuItem");
+        if (adminMenuItemLink) adminMenuItemLink.href = "admin.html";
       }
 
       function esc(value) {
@@ -1243,7 +1245,7 @@
 
       if (window.AllianceBootstrap && window.AllianceBootstrap.loadScripts) {
         window.AllianceBootstrap.loadScripts([
-          "assets/nav-auth.js?v=202604201933",
+          "assets/nav-auth.js?v=202607211700",
           "assets/auth-guard.js?v=20260420",
           "assets/user-center.js?v=202607211600"
         ]);
@@ -1251,7 +1253,7 @@
       }
 
       [
-        isFileMode ? "public/assets/nav-auth.js?v=202604201933" : "/assets/nav-auth.js?v=202604201933",
+        isFileMode ? "public/assets/nav-auth.js?v=202607211700" : "/assets/nav-auth.js?v=202607211700",
         isFileMode ? "public/assets/auth-guard.js?v=20260420" : "/assets/auth-guard.js?v=20260420",
         isFileMode ? "public/assets/user-center.js?v=202607211600" : "/assets/user-center.js?v=202607211600"
       ].forEach(function (src) {

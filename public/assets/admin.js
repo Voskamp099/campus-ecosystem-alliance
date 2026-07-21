@@ -483,6 +483,58 @@ async function localApi(path, options = {}) {
     return { item: items[index] };
   }
 
+  if (path === "/api/admin/activity-registrations" && method === "GET") {
+    return { items: getLocalData("alliance_activity_registrations") };
+  }
+
+  if (path === "/api/admin/delivery-records" && method === "GET") {
+    return { items: getLocalData("alliance_delivery_records") };
+  }
+
+  if (path === "/api/admin/user-events" && method === "GET") {
+    return { items: getLocalData("alliance_user_events") };
+  }
+
+  if (path === "/api/admin/user-recruits" && method === "GET") {
+    return { items: getLocalData("alliance_user_recruits") };
+  }
+
+  if (path.startsWith("/api/admin/user-events/") && method === "POST") {
+    const id = Number(path.split("/")[4]);
+    const action = path.split("/")[5];
+    const items = getLocalData("alliance_user_events");
+    const index = items.findIndex(item => Number(item.id) === id);
+    if (index >= 0) {
+      items[index].status = action === "approve" ? "approved" : "rejected";
+      setLocalData("alliance_user_events", items);
+    }
+    return { ok: true, item: items[index] || {} };
+  }
+
+  if (path.startsWith("/api/admin/user-recruits/") && method === "POST") {
+    const id = Number(path.split("/")[4]);
+    const action = path.split("/")[5];
+    const items = getLocalData("alliance_user_recruits");
+    const index = items.findIndex(item => Number(item.id) === id);
+    if (index >= 0) {
+      items[index].status = action === "approve" ? "approved" : "rejected";
+      setLocalData("alliance_user_recruits", items);
+    }
+    return { ok: true, item: items[index] || {} };
+  }
+
+  if (path.startsWith("/api/admin/user-events/") && method === "DELETE") {
+    const id = Number(path.split("/")[4]);
+    setLocalData("alliance_user_events", getLocalData("alliance_user_events").filter(item => Number(item.id) !== id));
+    return { ok: true };
+  }
+
+  if (path.startsWith("/api/admin/user-recruits/") && method === "DELETE") {
+    const id = Number(path.split("/")[4]);
+    setLocalData("alliance_user_recruits", getLocalData("alliance_user_recruits").filter(item => Number(item.id) !== id));
+    return { ok: true };
+  }
+
   if (path === "/api/admin/import" && method === "POST") {
     const body = parseBody();
     Object.keys(body).forEach(key => setLocalData(key, Array.isArray(body[key]) ? body[key] : []));
@@ -605,12 +657,25 @@ function checkAllianceAdminToken() {
   return null;
 }
 
+// 确保本地存在一条管理员用户记录，方便“我的”页面识别管理员身份
+function ensureAdminUser(payload) {
+  try {
+    if (localStorage.getItem("alliance_user")) return;
+    localStorage.setItem("alliance_user", JSON.stringify({
+      isAdmin: true,
+      nickname: (payload && (payload.nickname || payload.email)) || "管理员",
+      email: (payload && payload.email) || "admin@alliance.local"
+    }));
+  } catch (error) {}
+}
+
 async function checkAuth() {
   if (IS_FILE_MODE) {
     // 先检查 alliance_token（用户中心登录的）
     const allianceAdmin = checkAllianceAdminToken();
     if (allianceAdmin) {
       STATE.token = allianceAdmin.token;
+      ensureAdminUser(allianceAdmin.payload);
       updateAuthUI(true, allianceAdmin.payload.nickname || allianceAdmin.payload.email || '管理员');
       return true;
     }
@@ -625,6 +690,7 @@ async function checkAuth() {
   const allianceAdmin = checkAllianceAdminToken();
   if (allianceAdmin) {
     STATE.token = allianceAdmin.token;
+    ensureAdminUser(allianceAdmin.payload);
     updateAuthUI(true, allianceAdmin.payload.nickname || allianceAdmin.payload.email || '管理员');
     return true;
   }
@@ -656,6 +722,14 @@ async function handleLogin(event) {
     });
     STATE.token = data.token;
     localStorage.setItem(LOCAL_TOKEN_KEY, STATE.token);
+    // 让前台其余页面（如“我的”）也能识别管理员身份
+    try {
+      localStorage.setItem("alliance_user", JSON.stringify({
+        isAdmin: true,
+        nickname: (data.admin && data.admin.username) || "管理员",
+        email: "admin@alliance.local"
+      }));
+    } catch (error) {}
     updateAuthUI(true, data.admin.username);
     await renderUI();
     showToast("登录成功");
@@ -666,11 +740,17 @@ async function handleLogin(event) {
 
 function handleLogout() {
   STATE.token = "";
-  localStorage.removeItem(LOCAL_TOKEN_KEY);
-  localStorage.removeItem("alliance_token");
-  localStorage.removeItem("alliance_user");
+  try { localStorage.removeItem(LOCAL_TOKEN_KEY); } catch (error) {}
+  try { localStorage.removeItem("alliance_token"); } catch (error) {}
+  try { localStorage.removeItem("alliance_user"); } catch (error) {}
+  try { document.documentElement.classList.remove("admin-preauthed"); } catch (error) {}
   updateAuthUI(false);
-  location.reload();
+  // 明确退出：回到首页（或文件模式的 index.html）
+  if (IS_FILE_MODE) {
+    window.location.href = "index.html";
+  } else {
+    window.location.href = "/";
+  }
 }
 
 async function loadItems() {
