@@ -1,9 +1,17 @@
 const defaultCategories = [
-  { slug: "food-fun", title: "吃喝玩乐", desc: "餐饮折扣、青年社交与线下聚会资源。", image: "", items: ["联盟餐饮折扣", "线下聚会优先报名"] },
-  { slug: "lifestyle", title: "衣食住行", desc: "酒店优惠、购物折扣、出行补贴等。", image: "", items: ["酒店会员优惠", "出行补贴"] },
-  { slug: "study-life", title: "学习提升", desc: "课程、工具、论文与学业支持。", image: "", items: ["AI 学习工具", "论文辅助资源"] },
-  { slug: "career-startup", title: "就业创业", desc: "实习实践、创业者社群和导师支持。", image: "", items: ["实习实践", "创业者社群"] }
+  { slug: "food-fun", title: "吃喝玩乐", desc: "餐饮折扣、青年社交与线下聚会资源。", image: "", icon: "🍜", items: ["联盟餐饮折扣", "线下聚会优先报名"] },
+  { slug: "lifestyle", title: "衣食住行", desc: "酒店优惠、购物折扣、出行补贴等。", image: "", icon: "🛍️", items: ["酒店会员优惠", "出行补贴"] },
+  { slug: "study-life", title: "学习提升", desc: "课程、工具、论文与学业支持。", image: "", icon: "📚", items: ["AI 学习工具", "论文辅助资源"] },
+  { slug: "career-startup", title: "就业创业", desc: "实习实践、创业者社群和导师支持。", image: "", icon: "🚀", items: ["实习实践", "创业者社群"] }
 ];
+
+// 每个分类对应的图标，确保前台/后台无论数据来源都显示正确图标
+const CATEGORY_ICON_MAP = {
+  "food-fun": "🍜",
+  "lifestyle": "🛍️",
+  "study-life": "📚",
+  "career-startup": "🚀"
+};
 
 const defaultCategoryDetails = {
   "food-fun": [
@@ -38,29 +46,40 @@ const defaultHeroCarousel = [
   { title: "生态合作与共建", meta: "活动照片", image: "", link: "#events" }
 ];
 
+// 生成统一的品牌徽标（圆角方块 + 缩写），保证每个伙伴都有对应的图标
+function brandBadge(text, bg) {
+  const fs = text.length <= 1 ? 18 : text.length === 2 ? 16 : 12;
+  const svg =
+    "<svg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'>" +
+    "<rect width='46' height='46' rx='12' fill='" + bg + "'/>" +
+    "<text x='23' y='30' text-anchor='middle' font-family='Noto Sans SC,sans-serif' font-size='" + fs + "' font-weight='700' fill='white'>" + text + "</text>" +
+    "</svg>";
+  return "data:image/svg+xml," + encodeURIComponent(svg);
+}
+
 const defaultPartners = {
   university: [
-    { name: "北京大学", type: "综合院校", logo: "" },
-    { name: "清华大学", type: "综合院校", logo: "" },
-    { name: "北京工业大学", type: "理工院校", logo: "" },
-    { name: "北京理工大学", type: "理工院校", logo: "" },
-    { name: "北京航空航天大学", type: "航空航天", logo: "" },
-    { name: "对外经济贸易大学", type: "财经院校", logo: "" }
+    { name: "北京大学", type: "综合院校", logo: brandBadge("北大", "#C8102E") },
+    { name: "清华大学", type: "综合院校", logo: brandBadge("清华", "#5C2E91") },
+    { name: "北京工业大学", type: "理工院校", logo: brandBadge("北工", "#1B3A6B") },
+    { name: "北京理工大学", type: "理工院校", logo: brandBadge("北理", "#9E1B32") },
+    { name: "北京航空航天大学", type: "航空航天", logo: brandBadge("北航", "#003D7D") },
+    { name: "对外经济贸易大学", type: "财经院校", logo: brandBadge("经贸", "#C8102E") }
   ],
   company: [
-    { name: "腾讯", type: "互联网 / 科技", logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Crect width='46' height='46' rx='12' fill='%231274D4'/%3E%3Ctext x='23' y='31' text-anchor='middle' font-family='Noto Sans SC,sans-serif' font-size='18' font-weight='700' fill='white'%3E%E8%85%BE%3C/text%3E%3C/svg%3E" },
-    { name: "字节跳动", type: "互联网", logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Crect width='46' height='46' rx='12' fill='%23FE2C55'/%3E%3Ctext x='23' y='31' text-anchor='middle' font-family='Noto Sans SC,sans-serif' font-size='13' font-weight='700' fill='white'%3E%E5%AD%97%E7%AC%A6%3C/text%3E%3C/svg%3E" },
-    { name: "京东", type: "电商 / 科技", logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Crect width='46' height='46' rx='12' fill='%23E2231A'/%3E%3Ctext x='23' y='31' text-anchor='middle' font-family='Noto Sans SC,sans-serif' font-size='18' font-weight='700' fill='white'%3E%E4%BA%AC%3C/text%3E%3C/svg%3E" },
-    { name: "百度", type: "AI / 搜索", logo: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='46' height='46' viewBox='0 0 46 46'%3E%3Crect width='46' height='46' rx='12' fill='%231931D1'/%3E%3Ctext x='23' y='31' text-anchor='middle' font-family='Noto Sans SC,sans-serif' font-size='18' font-weight='700' fill='white'%3E%E7%99%BE%3C/text%3E%3C/svg%3E" },
-    { name: "智联招聘", type: "人力资源", logo: "" },
-    { name: "华住会", type: "酒店集团", logo: "" },
-    { name: "Wteam", type: "创业社群", logo: "" },
-    { name: "Sensation", type: "娱乐 / 餐饮", logo: "" }
+    { name: "腾讯", type: "互联网 / 科技", logo: brandBadge("腾", "#1274D4") },
+    { name: "字节跳动", type: "互联网", logo: brandBadge("字", "#FE2C55") },
+    { name: "京东", type: "电商 / 科技", logo: brandBadge("京", "#E2231A") },
+    { name: "百度", type: "AI / 搜索", logo: brandBadge("百", "#1931D1") },
+    { name: "智联招聘", type: "人力资源", logo: brandBadge("智联", "#FF6000") },
+    { name: "华住会", type: "酒店集团", logo: brandBadge("华住", "#1A53C7") },
+    { name: "Wteam", type: "创业社群", logo: brandBadge("WT", "#2B2B2B") },
+    { name: "Sensation", type: "娱乐 / 餐饮", logo: brandBadge("S", "#E84393") }
   ],
   government: [
-    { name: "北京市科协", type: "科创支持", logo: "" },
-    { name: "中关村相关机构", type: "园区 / 创新生态", logo: "" },
-    { name: "北京经开区相关平台", type: "产业服务", logo: "" }
+    { name: "北京市科协", type: "科创支持", logo: brandBadge("科协", "#C8102E") },
+    { name: "中关村相关机构", type: "园区 / 创新生态", logo: brandBadge("中关", "#1565C0") },
+    { name: "北京经开区相关平台", type: "产业服务", logo: brandBadge("经开", "#00897B") }
   ]
 };
 
@@ -594,7 +613,7 @@ function renderCategories() {
     '<a class="cat-card card reveal" href="' + escapeHTML(getCategoryPageUrl(item.slug)) + '">' +
       (item.image
         ? '<img class="cat-thumb" src="' + escapeHTML(item.image) + '" alt="' + escapeHTML(item.title) + '" loading="lazy" decoding="async">'
-        : '<span class="cat-icon" aria-hidden="true">📦</span>') +
+        : '<span class="cat-icon" aria-hidden="true">' + escapeHTML(item.icon || CATEGORY_ICON_MAP[item.slug] || "📦") + "</span>") +
       '<h3 class="cat-name">' + escapeHTML(item.title) + "</h3>" +
       '<p class="cat-desc">' + escapeHTML(item.desc || "点击查看详情") + "</p>" +
       '<span class="cat-foot">点击了解详情</span>' +

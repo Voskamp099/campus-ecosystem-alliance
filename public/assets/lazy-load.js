@@ -142,4 +142,7 @@ if (typeof window !== 'undefined') {
   window.lazyLoader = lazyLoader;
 }
 
-export default LazyLoader;
+// 兼容 CommonJS / 非模块化加载，避免经典 script 标签下 export 抛 SyntaxError
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = LazyLoader;
+}

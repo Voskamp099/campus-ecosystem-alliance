@@ -143,7 +143,7 @@ ${verifyUrl}
  * @param {string} token - 重置令牌
  */
 export async function sendPasswordResetEmail(email, token) {
-  const resetUrl = `${config.siteUrl || "http://localhost:3000"}/reset-password.html?token=${token}`;
+  const resetUrl = `${config.siteUrl || "http://localhost:3000"}/forgot-password.html?token=${token}`;
 
   const html = `
 <!DOCTYPE html>

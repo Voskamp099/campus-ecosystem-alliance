@@ -7,6 +7,16 @@ const CATEGORY_TABS = [
   { slug: "events", title: "近期活动" }
 ];
 
+// 每个 tab 对应的图标，避免所有占位都一样
+const TAB_ICON_MAP = {
+  "food-fun": "🍜",
+  "lifestyle": "🛍️",
+  "study-life": "📚",
+  "career-startup": "🚀",
+  "recruit": "💼",
+  "events": "📅"
+};
+
 const defaultCategoryDetails = {
   "food-fun": [
     { title: "线下聚会与城市活动", desc: "适合周末聚会、社交联谊和城市探索活动。", image: "", link: "#join", meta: "周末 · 北京" }
@@ -145,7 +155,7 @@ function renderList() {
     '<article class="item-card">' +
       (item.image
         ? '<div class="item-thumb"><img src="' + escapeHTML(item.image) + '" alt="' + escapeHTML(item.title) + '" loading="lazy" decoding="async"></div>'
-        : '<div class="item-thumb-placeholder">活</div>') +
+        : '<div class="item-thumb-placeholder">' + escapeHTML(TAB_ICON_MAP[state.activeCategory] || "活") + "</div>") +
       '<div>' +
         '<h3 class="item-title">' + escapeHTML(item.title) + '</h3>' +
         '<div class="item-meta">' +

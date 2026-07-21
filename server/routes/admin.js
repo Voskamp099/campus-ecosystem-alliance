@@ -2,6 +2,7 @@ import { Router } from "express";
 import multer from "multer";
 import { createAdminToken, requireAdmin, verifyAdminCredentials } from "../auth.js";
 import { config } from "../config.js";
+import { csrfCookieNameValue } from "../utils/csrf.js";
 import {
   createContent,
   deleteContent,
@@ -47,6 +48,14 @@ router.post("/auth/login", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+// 退出登录：JWT 无状态，这里主要清除服务端 CSRF cookie，返回 200
+router.post("/auth/logout", (req, res) => {
+  try {
+    res.clearCookie(csrfCookieNameValue, { path: "/" });
+  } catch (error) {}
+  res.json({ success: true, message: "已退出登录" });
 });
 
 router.get("/auth/me", requireAdmin, (req, res) => {

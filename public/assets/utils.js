@@ -265,7 +265,7 @@ async function api(url, options = {}) {
   };
   
   // 添加认证 token
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("alliance_token");
   if (token) {
     defaultOptions.headers["Authorization"] = `Bearer ${token}`;
   }

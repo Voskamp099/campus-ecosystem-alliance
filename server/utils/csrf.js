@@ -54,6 +54,9 @@ const { generateCsrfToken, validateRequest, doubleCsrfProtection } = doubleCsrf(
 // 导出所有需要的函数
 export { generateCsrfToken as generateToken, validateRequest, doubleCsrfProtection };
 
+// 导出 CSRF cookie 名称，供退出登录等场景清除 cookie 使用
+export const csrfCookieNameValue = csrfCookieName;
+
 /**
  * CSRF Token 生成中间件
  * 为每个请求生成新的 CSRF token

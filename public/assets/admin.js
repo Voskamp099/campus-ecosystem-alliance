@@ -168,7 +168,9 @@ const HUB_CONTENT_SUBTABS = {
 };
 
 const IS_FILE_MODE = window.location.protocol === "file:";
-const LOCAL_ADMIN_USERNAME = "gly";
+// 离线（file://）模式下的演示管理员账号：用户名与线上 .env 的 ADMIN_USERNAME 保持一致（admin），
+// 密码为本地演示默认值。线上 server 模式以 .env 中的 ADMIN_PASSWORD 为准，切勿依赖此处硬编码值。
+const LOCAL_ADMIN_USERNAME = "admin";
 const LOCAL_ADMIN_PASSWORD = "123456";
 const LOCAL_TOKEN_KEY = "alliance_admin_token";
 
@@ -739,6 +741,13 @@ async function handleLogin(event) {
 }
 
 function handleLogout() {
+  // 服务端退出：清除 CSRF cookie（best-effort，不阻塞跳转）
+  if (!IS_FILE_MODE && STATE.token) {
+    const headers = { "Content-Type": "application/json" };
+    if (csrfTokenCache) headers["X-CSRF-Token"] = csrfTokenCache;
+    headers["Authorization"] = `Bearer ${STATE.token}`;
+    fetch("/api/admin/auth/logout", { method: "POST", headers, keepalive: true }).catch(() => {});
+  }
   STATE.token = "";
   try { localStorage.removeItem(LOCAL_TOKEN_KEY); } catch (error) {}
   try { localStorage.removeItem("alliance_token"); } catch (error) {}

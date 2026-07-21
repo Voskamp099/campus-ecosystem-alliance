@@ -142,11 +142,11 @@ app.use(csrfTokenMiddleware);
 app.get("/api/csrf-token", csrfTokenRoute);
 
 // CSRF 保护（应用于所有状态改变的路由）
+// 注意：活动报名/投递记录等用户提交写接口的前缀是 /api/activity-registrations、/api/delivery-records，
+// 与下面被删除的 /api/activity、/api/delivery 前缀不同；前端对这些接口未携带 CSRF token，故不在此强制 CSRF。
 app.use("/api/admin", doubleCsrfProtection);
 app.use("/api/auth", doubleCsrfProtection);
 app.use("/api/user", doubleCsrfProtection);
-app.use("/api/activity", doubleCsrfProtection);
-app.use("/api/delivery", doubleCsrfProtection);
 
 // ── API 路由 ──────────────────────────────────────────────────
 // API 文档（Swagger UI）
