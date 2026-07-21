@@ -22,14 +22,12 @@ const csrfCookieName = isHttps
 const { generateCsrfToken, validateRequest, doubleCsrfProtection } = doubleCsrf({
   getSecret: () => process.env.CSRF_SECRET || "csrf-secret-change-me-in-production",
   getSessionIdentifier: (req) => {
-    const authHeader = req.headers.authorization || "";
-    if (authHeader.startsWith("Bearer ")) {
-      return authHeader.slice(7);
-    }
-    // 不使用 req.ip 作为 session 标识：
-    // Render 等反向代理环境下，同一个用户的多个请求可能来自不同出口 IP，
-    // 导致 HMAC 校验时 sessionIdentifier 不一致 → CSRF 403。
-    // User-Agent 在同一浏览器会话中是稳定的，足以作为未登录用户的标识。
+    // 关键：CSRF token 是在「未登录」时通过 GET /api/csrf-token 签发的，
+    // 此时请求没有 Authorization 头，session 标识只能是 user-agent。
+    // 如果用户登录后、带 Authorization 的请求改用 JWT 作为标识，
+    // 则已签发的 token 永远校验失败 → 所有鉴权后的 POST（退出、审核、删除等）全部 403。
+    // 因此签发与校验必须使用同一个稳定标识。浏览器会话内 user-agent 是稳定的，足够作为标识。
+    // （不使用 req.ip：反向代理环境下同一用户出口 IP 可能变化，同样会导致 403。）
     return req.headers["user-agent"] || "unknown";
   },
   cookieName: csrfCookieName,
