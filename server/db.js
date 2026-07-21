@@ -36,4 +36,11 @@ export function invalidateDbCache() {
 }
 
 // 每 60 秒重新检测 MySQL 可用性
-setInterval(() => { _dbAvailable = null; }, 60_000);
+const _healthCheckTimer = setInterval(() => { _dbAvailable = null; }, 60_000);
+_healthCheckTimer.unref?.();
+
+// 供测试 / 优雅关闭使用：关闭连接池并清除定时器
+export async function closePool() {
+  clearInterval(_healthCheckTimer);
+  await pool.end();
+}
