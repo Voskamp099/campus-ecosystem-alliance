@@ -3,7 +3,7 @@
  * 管理用户发布的活动和实习实践内容，支持审核状态流转
  * 双通道：MySQL 优先，JSON 文件降级
  */
-import { pool, isDatabaseAvailable } from "../db.js";
+import { pool, isDatabaseAvailable, invalidateDbCache } from "../db.js";
 import { loadJson, saveJson } from "./json-store.js";
 import { logger } from "../utils/logger.js";
 
@@ -282,8 +282,13 @@ export async function listPendingRecruits() {
 
 export async function listAllUserEvents() {
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query("SELECT * FROM user_events ORDER BY created_at DESC");
-    return rows.map(mapEventRow);
+    try {
+      const [rows] = await pool.query("SELECT * FROM user_events ORDER BY created_at DESC");
+      return rows.map(mapEventRow);
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "listAllUserEvents \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230 JSON");
+      invalidateDbCache();
+    }
   }
   const items = loadJson(EVENTS_FILE, []);
   return items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
@@ -291,8 +296,13 @@ export async function listAllUserEvents() {
 
 export async function listAllUserRecruits() {
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query("SELECT * FROM user_recruits ORDER BY created_at DESC");
-    return rows.map(mapRecruitRow);
+    try {
+      const [rows] = await pool.query("SELECT * FROM user_recruits ORDER BY created_at DESC");
+      return rows.map(mapRecruitRow);
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "listAllUserRecruits \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230 JSON");
+      invalidateDbCache();
+    }
   }
   const items = loadJson(RECRUITS_FILE, []);
   return items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));

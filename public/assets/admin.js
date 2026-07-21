@@ -1163,8 +1163,17 @@ async function renderUI() {
   renderPanelHead();
   const hideAddBtn = STATE.mainTab === "applications" || STATE.mainTab === "users" || STATE.mainTab === "userStats";
   document.getElementById("addBtn").classList.toggle("hidden", hideAddBtn);
-  await loadItems();
-  renderGrid();
+  const grid = document.getElementById("grid");
+  if (grid) grid.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8;">\u52a0\u8f7d\u4e2d\u2026</div>';
+  try {
+    await loadItems();
+    renderGrid();
+  } catch (error) {
+    console.error("[Admin] renderUI error:", error);
+    if (grid) {
+      grid.innerHTML = `<div style="padding:2rem;text-align:center;color:#ef4444;">\u52a0\u8f7d\u5931\u8d25\uff1a${error.message || "\u672a\u77e5\u9519\u8bef"}<br><button onclick="renderUI()" style="margin-top:0.5rem;padding:0.3rem 1rem;border:1px solid #475569;border-radius:4px;background:transparent;color:#94a3b8;cursor:pointer;">\u91cd\u8bd5</button></div>`;
+    }
+  }
 }
 
 function bindEvents() {

@@ -1,4 +1,4 @@
-import { pool, isDatabaseAvailable } from "../db.js";
+import { pool, isDatabaseAvailable, invalidateDbCache } from "../db.js";
 import { loadJson, saveJson } from "./json-store.js";
 import { logger } from "../utils/logger.js";
 
@@ -58,38 +58,43 @@ function getNextId(arr) {
 // 查询用户的生态对接申请（支持 phone 或 userId）
 export async function getUserDirectoryApplications(phone, userId) {
   if (await isDatabaseAvailable()) {
-    let rows;
-    if (userId) {
-      [rows] = await pool.query(
-        `SELECT 
-          id, user_id as userId, directory_type as directoryType, tracking_code as trackingCode, target_title as targetTitle,
-          target_meta as targetMeta, applicant_name as applicantName, applicant_org as applicantOrg,
-          cooperation_intent as cooperationIntent, phone, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
-        FROM directory_applications 
-        WHERE user_id = ? 
-        ORDER BY created_at DESC`,
-        [userId]
-      );
-    } else {
-      const normalizedPhone = normalizePhone(phone);
-      if (!normalizedPhone) return [];
-      [rows] = await pool.query(
-        `SELECT 
-          id, directory_type as directoryType, tracking_code as trackingCode, target_title as targetTitle,
-          target_meta as targetMeta, applicant_name as applicantName, applicant_org as applicantOrg,
-          cooperation_intent as cooperationIntent, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
-        FROM directory_applications 
-        WHERE phone = ? 
-        ORDER BY created_at DESC`,
-        [normalizedPhone]
-      );
+    try {
+      let rows;
+      if (userId) {
+        [rows] = await pool.query(
+          `SELECT 
+            id, user_id as userId, directory_type as directoryType, tracking_code as trackingCode, target_title as targetTitle,
+            target_meta as targetMeta, applicant_name as applicantName, applicant_org as applicantOrg,
+            cooperation_intent as cooperationIntent, phone, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
+          FROM directory_applications 
+          WHERE user_id = ? 
+          ORDER BY created_at DESC`,
+          [userId]
+        );
+      } else {
+        const normalizedPhone = normalizePhone(phone);
+        if (!normalizedPhone) return [];
+        [rows] = await pool.query(
+          `SELECT 
+            id, directory_type as directoryType, tracking_code as trackingCode, target_title as targetTitle,
+            target_meta as targetMeta, applicant_name as applicantName, applicant_org as applicantOrg,
+            cooperation_intent as cooperationIntent, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
+          FROM directory_applications 
+          WHERE phone = ? 
+          ORDER BY created_at DESC`,
+          [normalizedPhone]
+        );
+      }
+      return rows.map(row => ({
+        ...row,
+        type: "directory",
+        typeLabel: "生态对接",
+        statusInfo: STATUS_MAP.directory[row.status] || { label: row.status, color: "#6b7280" }
+      }));
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "getUserDirectoryApplications 查询失败，降级到 JSON");
+      invalidateDbCache();
     }
-    return rows.map(row => ({
-      ...row,
-      type: "directory",
-      typeLabel: "生态对接",
-      statusInfo: STATUS_MAP.directory[row.status] || { label: row.status, color: "#6b7280" }
-    }));
   }
 
   // JSON 降级
@@ -126,39 +131,44 @@ export async function getUserDirectoryApplications(phone, userId) {
 // 查询用户的活动报名（支持 phone 或 userId）
 export async function getUserActivityRegistrations(phone, userId) {
   if (await isDatabaseAvailable()) {
-    let rows;
-    if (userId) {
-      [rows] = await pool.query(
-        `SELECT 
-          id, user_id as userId, activity_id as activityId, activity_title as activityTitle,
-          applicant_name as applicantName, applicant_org as applicantOrg, phone, status,
-          created_at as createdAt, updated_at as updatedAt
-        FROM activity_registrations 
-        WHERE user_id = ? 
-        ORDER BY created_at DESC`,
-        [userId]
-      );
-    } else {
-      const normalizedPhone = normalizePhone(phone);
-      if (!normalizedPhone) return [];
-      [rows] = await pool.query(
-        `SELECT 
-          id, activity_id as activityId, activity_title as activityTitle,
-          applicant_name as applicantName, applicant_org as applicantOrg, status,
-          created_at as createdAt, updated_at as updatedAt
-        FROM activity_registrations 
-        WHERE phone = ? 
-        ORDER BY created_at DESC`,
-        [normalizedPhone]
-      );
+    try {
+      let rows;
+      if (userId) {
+        [rows] = await pool.query(
+          `SELECT 
+            id, user_id as userId, activity_id as activityId, activity_title as activityTitle,
+            applicant_name as applicantName, applicant_org as applicantOrg, phone, status,
+            created_at as createdAt, updated_at as updatedAt
+          FROM activity_registrations 
+          WHERE user_id = ? 
+          ORDER BY created_at DESC`,
+          [userId]
+        );
+      } else {
+        const normalizedPhone = normalizePhone(phone);
+        if (!normalizedPhone) return [];
+        [rows] = await pool.query(
+          `SELECT 
+            id, activity_id as activityId, activity_title as activityTitle,
+            applicant_name as applicantName, applicant_org as applicantOrg, status,
+            created_at as createdAt, updated_at as updatedAt
+          FROM activity_registrations 
+          WHERE phone = ? 
+          ORDER BY created_at DESC`,
+          [normalizedPhone]
+        );
+      }
+      return rows.map(row => ({
+        ...row,
+        type: "activity",
+        typeLabel: "活动报名",
+        title: row.activityTitle,
+        statusInfo: STATUS_MAP.activity[row.status] || { label: row.status, color: "#6b7280" }
+      }));
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "getUserActivityRegistrations 查询失败，降级到 JSON");
+      invalidateDbCache();
     }
-    return rows.map(row => ({
-      ...row,
-      type: "activity",
-      typeLabel: "活动报名",
-      title: row.activityTitle,
-      statusInfo: STATUS_MAP.activity[row.status] || { label: row.status, color: "#6b7280" }
-    }));
   }
 
   // JSON 降级
@@ -193,40 +203,45 @@ export async function getUserActivityRegistrations(phone, userId) {
 // 查询用户的投递记录（支持 phone 或 userId）
 export async function getUserDeliveryRecords(phone, userId) {
   if (await isDatabaseAvailable()) {
-    let rows;
-    if (userId) {
-      [rows] = await pool.query(
-        `SELECT 
-          id, user_id as userId, opportunity_id as opportunityId, opportunity_title as opportunityTitle,
-          opportunity_type as opportunityType, applicant_name as applicantName, applicant_org as applicantOrg,
-          phone, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
-        FROM delivery_records 
-        WHERE user_id = ? 
-        ORDER BY created_at DESC`,
-        [userId]
-      );
-    } else {
-      const normalizedPhone = normalizePhone(phone);
-      if (!normalizedPhone) return [];
-      [rows] = await pool.query(
-        `SELECT 
-          id, opportunity_id as opportunityId, opportunity_title as opportunityTitle,
-          opportunity_type as opportunityType, applicant_name as applicantName, applicant_org as applicantOrg,
-          status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
-        FROM delivery_records 
-        WHERE phone = ? 
-        ORDER BY created_at DESC`,
-        [normalizedPhone]
-      );
+    try {
+      let rows;
+      if (userId) {
+        [rows] = await pool.query(
+          `SELECT 
+            id, user_id as userId, opportunity_id as opportunityId, opportunity_title as opportunityTitle,
+            opportunity_type as opportunityType, applicant_name as applicantName, applicant_org as applicantOrg,
+            phone, status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
+          FROM delivery_records 
+          WHERE user_id = ? 
+          ORDER BY created_at DESC`,
+          [userId]
+        );
+      } else {
+        const normalizedPhone = normalizePhone(phone);
+        if (!normalizedPhone) return [];
+        [rows] = await pool.query(
+          `SELECT 
+            id, opportunity_id as opportunityId, opportunity_title as opportunityTitle,
+            opportunity_type as opportunityType, applicant_name as applicantName, applicant_org as applicantOrg,
+            status, status_note as statusNote, created_at as createdAt, updated_at as updatedAt
+          FROM delivery_records 
+          WHERE phone = ? 
+          ORDER BY created_at DESC`,
+          [normalizedPhone]
+        );
+      }
+      const typeLabels = { internship: "实习申请", practice: "实践申请", project: "项目申请" };
+      return rows.map(row => ({
+        ...row,
+        type: "delivery",
+        typeLabel: typeLabels[row.opportunityType] || "投递记录",
+        title: row.opportunityTitle,
+        statusInfo: STATUS_MAP.delivery[row.status] || { label: row.status, color: "#6b7280" }
+      }));
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "getUserDeliveryRecords 查询失败，降级到 JSON");
+      invalidateDbCache();
     }
-    const typeLabels = { internship: "实习申请", practice: "实践申请", project: "项目申请" };
-    return rows.map(row => ({
-      ...row,
-      type: "delivery",
-      typeLabel: typeLabels[row.opportunityType] || "投递记录",
-      title: row.opportunityTitle,
-      statusInfo: STATUS_MAP.delivery[row.status] || { label: row.status, color: "#6b7280" }
-    }));
   }
 
   // JSON 降级
@@ -407,20 +422,30 @@ export async function createDeliveryRecord(payload) {
 
 export async function listActivityRegistrations() {
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query(
-      "SELECT * FROM activity_registrations ORDER BY created_at DESC, id DESC"
-    );
-    return rows;
+    try {
+      const [rows] = await pool.query(
+        "SELECT * FROM activity_registrations ORDER BY created_at DESC, id DESC"
+      );
+      return rows;
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "listActivityRegistrations \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230 JSON");
+      invalidateDbCache();
+    }
   }
   return loadActivityRegs();
 }
 
 export async function listDeliveryRecords() {
   if (await isDatabaseAvailable()) {
-    const [rows] = await pool.query(
-      "SELECT * FROM delivery_records ORDER BY created_at DESC, id DESC"
-    );
-    return rows;
+    try {
+      const [rows] = await pool.query(
+        "SELECT * FROM delivery_records ORDER BY created_at DESC, id DESC"
+      );
+      return rows;
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "listDeliveryRecords \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230 JSON");
+      invalidateDbCache();
+    }
   }
   return loadDeliveries();
 }

@@ -211,6 +211,14 @@ app.get(["/forgot-password", "/forgot-password.html"], (req, res) => {
   res.sendFile(path.join(rootDir, "public", "forgot-password.html"));
 });
 
+app.get(["/privacy", "/privacy.html"], (req, res) => {
+  res.sendFile(path.join(rootDir, "public", "privacy.html"));
+});
+
+app.get(["/terms", "/terms.html"], (req, res) => {
+  res.sendFile(path.join(rootDir, "public", "terms.html"));
+});
+
 // ── 健康检查和监控端点 ────────────────────────────────────────────────
 // 性能监控中间件
 app.use(performanceMonitor);

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>服务条款 | 北京校园生态合作联盟</title>
+  <meta name="description" content="北京校园生态合作联盟服务条款，规范联盟平台服务秩序，保障联盟成员的合法权益。">
+  <meta property="og:title" content="服务条款 | 北京校园生态合作联盟">
+  <meta property="og:description" content="北京校园生态合作联盟服务条款，规范联盟平台服务秩序，保障联盟成员的合法权益。">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta name="theme-color" content="#091a33">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.src = window.location.protocol === "file:" ? "public/assets/bootstrap.js" : "/assets/bootstrap.js";
+      script.onload = function () { window.AllianceBootstrap.initHead(); };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #091a33;
+      --bg-soft: #10264a;
+      --text: #eff6ff;
+      --text-soft: rgba(239, 246, 255, 0.74);
+      --text-muted: rgba(191, 219, 254, 0.54);
+      --accent: #60a5fa;
+      --accent-2: #8b5cf6;
+      --panel: rgba(11, 27, 52, 0.8);
+      --surface: rgba(255, 255, 255, 0.06);
+      --line: rgba(130, 175, 255, 0.18);
+      --line-strong: rgba(130, 175, 255, 0.32);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Noto Sans SC", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+    .legal-page {
+      min-height: 100vh;
+      padding: 48px 24px 64px;
+      background: radial-gradient(1200px 800px at 70% -10%, rgba(96,165,250,0.12), transparent),
+                  radial-gradient(900px 600px at -10% 60%, rgba(139,92,246,0.10), transparent),
+                  var(--bg);
+    }
+    .legal-container {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+    .legal-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .legal-header h1 {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+    .legal-meta {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .legal-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legal-meta span::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.6;
+    }
+    .legal-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 40px 36px;
+      backdrop-filter: blur(8px);
+    }
+    .legal-section {
+      margin-bottom: 32px;
+    }
+    .legal-section:last-child { margin-bottom: 0; }
+    .legal-section h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+    .legal-section h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-soft);
+      margin-top: 18px;
+      margin-bottom: 8px;
+    }
+    .legal-section p {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      margin-bottom: 10px;
+    }
+    .legal-section ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 10px;
+    }
+    .legal-section ul li {
+      color: var(--text-soft);
+      font-size: 14.5px;
+      padding: 4px 0 4px 20px;
+      position: relative;
+    }
+    .legal-section ul li::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 12px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      opacity: 0.5;
+    }
+    .legal-section strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .legal-footer {
+      text-align: center;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+    }
+    .legal-footer a {
+      display: inline-block;
+      padding: 10px 28px;
+      border-radius: 12px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+    .legal-footer a:hover {
+      background: var(--surface);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+    .legal-footer .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .legal-footer .footer-links a {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 400;
+      padding: 4px 8px;
+    }
+    .legal-footer .footer-links a:hover {
+      color: var(--accent);
+      transform: none;
+    }
+    @media (max-width: 640px) {
+      .legal-page { padding: 32px 16px 48px; }
+      .legal-card { padding: 28px 20px; }
+      .legal-header h1 { font-size: 26px; }
+      .legal-section h2 { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="legal-page">
+    <div class="legal-container">
+      <div class="legal-header">
+        <h1>服务条款</h1>
+        <div class="legal-meta">
+          <span>版本编号：2026-V1.0</span>
+          <span>生效日期：2026年7月21日</span>
+        </div>
+      </div>
+      <div class="legal-card">
+        <div class="legal-section">
+          <h2>前言</h2>
+          <p>北京校园生态合作联盟（以下简称"联盟"）致力于搭建高效、开放的产学研协同创新平台。为规范联盟平台（以下简称"平台"）服务秩序，保障联盟成员（以下简称"您"或"成员"）的合法权益，特制定本《北京校园生态合作联盟服务条款》（以下简称"本条款"）。请您在注册或使用平台服务前，仔细阅读并充分理解本条款内容。</p>
+        </div>
+        <div class="legal-section">
+          <h2>1. 联盟宗旨与性质</h2>
+          <p><strong>1.1 宗旨</strong>：整合高校、企业及政府优势资源，促进教育链、人才链与产业链、创新链的有机衔接，推动校地合作与科技成果转化。</p>
+          <p><strong>1.2 性质</strong>：本平台为B2B/B2G性质的信息交互与资源对接服务平台，不直接参与成员间的具体商业交易或项目执行，仅提供技术支持与中介服务。</p>
+        </div>
+        <div class="legal-section">
+          <h2>2. 成员资格与注册</h2>
+          <ul>
+            <li><strong>2.1 成员资格</strong>：申请加入联盟的成员须为具有合法经营资格或法人资格的高等院校、科研机构、企业单位或政府部门。</li>
+            <li><strong>2.2 注册义务</strong>：成员在注册时应当提供真实、准确、合法的单位信息及联系人信息。如信息发生变更，应及时更新。</li>
+            <li><strong>2.3 审核机制</strong>：联盟运营方有权对成员的入驻申请进行审核，对于不符合联盟定位或资质造假的申请，有权拒绝且无需说明理由。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>3. 成员权利与义务</h2>
+          <h3>3.1 成员权利</h3>
+          <ul>
+            <li>有权使用平台提供的资源对接、政策推送、数据查询等服务功能；</li>
+            <li>有权参与联盟组织的线上线下交流活动、产学研对接会；</li>
+            <li>对平台服务提出建议和批评。</li>
+          </ul>
+          <h3>3.2 成员义务</h3>
+          <ul>
+            <li>遵守国家法律法规及本条款规定，不得利用平台从事任何违法违规活动；</li>
+            <li>维护联盟声誉，不得发布虚假信息、谣言或涉及商业诋毁的内容；</li>
+            <li>严禁在平台上发布涉及国家秘密、未公开核心技术或其他敏感信息。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>4. 联盟服务内容</h2>
+          <ul>
+            <li><strong>资源对接</strong>：通过大数据匹配，为企业与高校提供科研项目合作、人才招聘、实习基地搭建等对接服务。</li>
+            <li><strong>政策推送</strong>：基于成员画像，精准推送政府关于产学研合作、税收优惠、人才引进等相关政策法规。</li>
+            <li><strong>联合咨询</strong>：提供法律、财务、知识产权转化等方面的专家咨询服务。</li>
+            <li><strong>数据分析</strong>：定期发布校园生态行业分析报告，辅助成员决策。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>5. 知识产权与成果归属</h2>
+          <ul>
+            <li><strong>5.1 平台知识产权</strong>：平台内包含的软件、技术、商标、文案、设计等知识产权归联盟运营方或相关权利人所有。</li>
+            <li><strong>5.2 成员上传内容</strong>：成员在平台上发布的信息、成果、需求等，其知识产权归原权利人所有。成员发布即视为授权联盟在平台范围内进行展示、推广和必要的编辑处理。</li>
+            <li><strong>5.3 合作成果归属</strong>：成员通过平台达成合作产生的知识产权（如专利、软著等），由合作双方在单独签署的协议中约定，联盟不拥有该类成果的知识产权。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>6. 信息保密义务</h2>
+          <p><strong>6.1 保密范围</strong>：成员在平台交互过程中知悉的对方商业秘密、技术数据、学生隐私信息及未公开的科研成果，均属保密范围。</p>
+          <p><strong>6.2 保密责任</strong>：未经权利方书面许可，成员不得向任何第三方披露或用于本合作目的以外的用途。本条款在协议终止后依然有效。</p>
+        </div>
+        <div class="legal-section">
+          <h2>7. 免责声明</h2>
+          <ul>
+            <li><strong>7.1 信息真实性</strong>：联盟致力于审核信息，但无法保证所有成员发布信息的绝对真实性、准确性和完整性。成员应自行审慎判断并承担交易风险。</li>
+            <li><strong>7.2 不可抗力</strong>：因自然灾害、战争、网络攻击、政府管制等不可抗力导致服务中断或数据丢失的，联盟不承担违约责任。</li>
+            <li><strong>7.3 第三方损失</strong>：成员间因合作产生的纠纷，由成员自行解决，联盟不承担连带赔偿责任，但将提供必要的协助。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>8. 违约责任</h2>
+          <ul>
+            <li><strong>8.1 违约认定</strong>：如成员违反本条款约定，侵犯他人权益或违反法律法规，联盟有权采取警告、限制功能、暂停服务、终止合作等措施。</li>
+            <li><strong>8.2 赔偿范围</strong>：如因成员违约给联盟或第三方造成损失的，违约成员应承担全部赔偿责任（包括但不限于律师费、诉讼费等）。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>9. 争议解决机制</h2>
+          <ul>
+            <li><strong>9.1 适用法律</strong>：本条款的订立、执行、解释及争议解决均适用中华人民共和国法律。</li>
+            <li><strong>9.2 协商与诉讼</strong>：双方因本条款产生的争议，应首先友好协商解决；协商不成的，任何一方均有权向联盟所在地有管辖权的人民法院提起诉讼。</li>
+          </ul>
+        </div>
+        <div class="legal-section">
+          <h2>10. 协议生效与变更</h2>
+          <ul>
+            <li><strong>10.1 生效</strong>：本条款自成员点击确认或实际使用平台服务之日起生效。</li>
+            <li><strong>10.2 变更</strong>：联盟可根据法律法规更新或平台运营需要修改本条款，修改后的条款在平台公布后即生效，如成员继续使用服务视为接受修改。</li>
+          </ul>
+        </div>
+        <div class="legal-footer">
+          <a href="/">返回首页</a>
+          <div class="footer-links">
+            <a href="/privacy.html">隐私政策</a>
+            <a href="/register.html">注册账号</a>
+            <a href="/login.html">登录</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-import { pool, isDatabaseAvailable } from "../db.js";
+import { pool, isDatabaseAvailable, invalidateDbCache } from "../db.js";
 import { loadJson, saveJson } from "./json-store.js";
 import { logger } from "../utils/logger.js";
 
@@ -171,11 +171,16 @@ export async function listDirectoryApplications() {
   if (!(await isDatabaseAvailable())) {
     return loadApplications().map(mapRow);
   }
-  
-  const [rows] = await pool.query(
-    "SELECT * FROM directory_applications ORDER BY created_at DESC, id DESC"
-  );
-  return rows.map(mapRow);
+  try {
+    const [rows] = await pool.query(
+      "SELECT * FROM directory_applications ORDER BY created_at DESC, id DESC"
+    );
+    return rows.map(mapRow);
+  } catch (dbErr) {
+    logger.warn({ err: dbErr }, "listDirectoryApplications \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230 JSON");
+    invalidateDbCache();
+    return loadApplications().map(mapRow);
+  }
 }
 
 export async function updateDirectoryApplication(id, payload = {}) {

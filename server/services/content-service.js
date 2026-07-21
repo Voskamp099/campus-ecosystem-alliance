@@ -1,5 +1,6 @@
-import { pool, isDatabaseAvailable } from "../db.js";
+import { pool, isDatabaseAvailable, invalidateDbCache } from "../db.js";
 import { getDefaultItems, DEFAULT_SITE_CONTENT } from "../defaults.js";
+import { logger } from "../utils/logger.js";
 
 const ALLOWED_SECTIONS = new Set([
   "hero_carousel",
@@ -105,16 +106,21 @@ function mapInputToRow(sectionKey, payload, sortOrder, groupKey) {
 
 async function seedIfEmpty(sectionKey, groupKey = null) {
   if (!(await isDatabaseAvailable())) return;
-  const [rows] = await pool.query(
-    "SELECT COUNT(*) AS count FROM content_items WHERE section_key = ? AND group_key <=> ?",
-    [sectionKey, groupKey]
-  );
+  try {
+    const [rows] = await pool.query(
+      "SELECT COUNT(*) AS count FROM content_items WHERE section_key = ? AND group_key <=> ?",
+      [sectionKey, groupKey]
+    );
 
-  if (rows[0]?.count > 0) return;
+    if (rows[0]?.count > 0) return;
 
-  const defaults = getDefaultItems(sectionKey, groupKey);
-  if (!defaults.length) return;
-  await replaceSection(sectionKey, groupKey, defaults);
+    const defaults = getDefaultItems(sectionKey, groupKey);
+    if (!defaults.length) return;
+    await replaceSection(sectionKey, groupKey, defaults);
+  } catch (dbErr) {
+    logger.warn({ err: dbErr, sectionKey, groupKey }, "seedIfEmpty \u5931\u8d25\uff0c\u8df3\u8fc7\u79cd\u5b50\u6570\u636e");
+    invalidateDbCache();
+  }
 }
 
 export async function listContent(sectionKey, groupKey = null) {
@@ -122,12 +128,18 @@ export async function listContent(sectionKey, groupKey = null) {
   if (!(await isDatabaseAvailable())) {
     return getDefaultItems(sectionKey, normalizedGroup);
   }
-  await seedIfEmpty(sectionKey, normalizedGroup);
-  const [rows] = await pool.query(
-    "SELECT * FROM content_items WHERE section_key = ? AND group_key <=> ? ORDER BY sort_order ASC, id ASC",
-    [sectionKey, normalizedGroup]
-  );
-  return rows.map(mapRowToItem);
+  try {
+    await seedIfEmpty(sectionKey, normalizedGroup);
+    const [rows] = await pool.query(
+      "SELECT * FROM content_items WHERE section_key = ? AND group_key <=> ? ORDER BY sort_order ASC, id ASC",
+      [sectionKey, normalizedGroup]
+    );
+    return rows.map(mapRowToItem);
+  } catch (dbErr) {
+    logger.warn({ err: dbErr, sectionKey, groupKey: normalizedGroup }, "listContent \u67e5\u8be2\u5931\u8d25\uff0c\u964d\u7ea7\u5230\u9ed8\u8ba4\u6570\u636e");
+    invalidateDbCache();
+    return getDefaultItems(sectionKey, normalizedGroup);
+  }
 }
 
 export async function getSiteContent() {
