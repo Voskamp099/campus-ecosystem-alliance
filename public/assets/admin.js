@@ -62,6 +62,38 @@ const CONFIG = {
     groupKey: null,
     fields: { meta: false, desc: false, link: false, items: false },
     placeholder: {}
+  },
+  activityRegs: {
+    label: "活动报名",
+    desc: "查看用户提交的活动报名记录。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
+  },
+  deliveryRecords: {
+    label: "投递记录",
+    desc: "查看用户提交的实习实践投递记录。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
+  },
+  userEvents: {
+    label: "用户活动",
+    desc: "审核用户发布的活动内容。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
+  },
+  userRecruits: {
+    label: "用户实习",
+    desc: "审核用户发布的实习实践内容。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
   }
 };
 
@@ -635,12 +667,35 @@ async function handleLogin(event) {
 function handleLogout() {
   STATE.token = "";
   localStorage.removeItem(LOCAL_TOKEN_KEY);
+  localStorage.removeItem("alliance_token");
+  localStorage.removeItem("alliance_user");
   updateAuthUI(false);
+  location.reload();
 }
 
 async function loadItems() {
   if (STATE.mainTab === "applications") {
     const data = await api("/api/admin/directory-applications", { method: "GET" });
+    STATE.items = data.items || [];
+    return;
+  }
+  if (STATE.mainTab === "activityRegs") {
+    const data = await api("/api/admin/activity-registrations", { method: "GET" });
+    STATE.items = data.items || [];
+    return;
+  }
+  if (STATE.mainTab === "deliveryRecords") {
+    const data = await api("/api/admin/delivery-records", { method: "GET" });
+    STATE.items = data.items || [];
+    return;
+  }
+  if (STATE.mainTab === "userEvents") {
+    const data = await api("/api/admin/user-events", { method: "GET" });
+    STATE.items = data.items || [];
+    return;
+  }
+  if (STATE.mainTab === "userRecruits") {
+    const data = await api("/api/admin/user-recruits", { method: "GET" });
     STATE.items = data.items || [];
     return;
   }
@@ -906,9 +961,133 @@ function renderApplications() {
   });
 }
 
+function renderActivityRegs() {
+  const grid = document.getElementById("grid");
+  if (!STATE.items.length) {
+    grid.innerHTML = '<div class="card empty"><div>暂无活动报名记录</div></div>';
+    return;
+  }
+  const statusLabels = { pending: "待确认", confirmed: "已确认", cancelled: "已取消", rejected: "未通过" };
+  grid.innerHTML = STATE.items.map(item => (
+    '<div class="card">' +
+      '<h3 class="title">' + escapeHTML(item.applicantName || "未命名") + "</h3>" +
+      (item.activityTitle ? '<p class="meta">活动：' + escapeHTML(item.activityTitle) + "</p>" : "") +
+      (item.applicantOrg ? '<p class="desc">单位：' + escapeHTML(item.applicantOrg) + "</p>" : "") +
+      (item.phone ? '<p class="desc">电话：' + escapeHTML(item.phone) + "</p>" : "") +
+      '<p class="meta">状态：' + escapeHTML(statusLabels[item.status] || item.status) + "</p>" +
+      '<p class="meta">报名时间：' + escapeHTML(item.createdAt ? new Date(item.createdAt).toLocaleString("zh-CN") : "未记录") + "</p>" +
+    "</div>"
+  )).join("");
+}
+
+function renderDeliveryRecords() {
+  const grid = document.getElementById("grid");
+  if (!STATE.items.length) {
+    grid.innerHTML = '<div class="card empty"><div>暂无投递记录</div></div>';
+    return;
+  }
+  const statusLabels = { pending: "待处理", reviewing: "审核中", accepted: "已通过", rejected: "未通过" };
+  const typeLabels = { internship: "实习", practice: "实践", project: "项目" };
+  grid.innerHTML = STATE.items.map(item => (
+    '<div class="card">' +
+      '<h3 class="title">' + escapeHTML(item.applicantName || "未命名") + "</h3>" +
+      (item.opportunityTitle ? '<p class="meta">岗位：' + escapeHTML(item.opportunityTitle) + "</p>" : "") +
+      (item.opportunityType ? '<p class="meta">类型：' + escapeHTML(typeLabels[item.opportunityType] || item.opportunityType) + "</p>" : "") +
+      (item.applicantOrg ? '<p class="desc">单位：' + escapeHTML(item.applicantOrg) + "</p>" : "") +
+      (item.phone ? '<p class="desc">电话：' + escapeHTML(item.phone) + "</p>" : "") +
+      '<p class="meta">状态：' + escapeHTML(statusLabels[item.status] || item.status) + "</p>" +
+      (item.statusNote ? '<p class="desc">备注：' + escapeHTML(item.statusNote) + "</p>" : "") +
+      '<p class="meta">投递时间：' + escapeHTML(item.createdAt ? new Date(item.createdAt).toLocaleString("zh-CN") : "未记录") + "</p>" +
+    "</div>"
+  )).join("");
+}
+
+function renderUserSubmissions(type) {
+  const grid = document.getElementById("grid");
+  if (!STATE.items.length) {
+    grid.innerHTML = '<div class="card empty"><div>暂无' + (type === "event" ? "活动" : "实习实践") + '发布记录</div></div>';
+    return;
+  }
+  const statusLabels = { pending: "待审核", approved: "已通过", rejected: "已拒绝" };
+  const approveUrl = type === "event" ? "/api/admin/user-events" : "/api/admin/user-recruits";
+  grid.innerHTML = STATE.items.map(item => (
+    '<div class="card">' +
+      (item.image ? '<div class="thumb"><img src="' + escapeHTML(item.image) + '" alt="' + escapeHTML(item.title) + '"></div>' : "") +
+      '<h3 class="title">' + escapeHTML(item.title || "未命名") + "</h3>" +
+      (item.meta ? '<p class="meta">' + escapeHTML(item.meta) + "</p>" : "") +
+      (item.desc ? '<p class="desc">' + escapeHTML(item.desc) + "</p>" : "") +
+      (item.link ? '<p class="link">' + escapeHTML(item.link) + "</p>" : "") +
+      (item.userName ? '<p class="desc">发布者：' + escapeHTML(item.userName) + "</p>" : "") +
+      (item.userOrg ? '<p class="desc">单位：' + escapeHTML(item.userOrg) + "</p>" : "") +
+      (item.eventDate ? '<p class="meta">活动日期：' + escapeHTML(item.eventDate) + "</p>" : "") +
+      (item.eventLocation ? '<p class="meta">地点：' + escapeHTML(item.eventLocation) + "</p>" : "") +
+      '<p class="meta">状态：' + escapeHTML(statusLabels[item.status] || item.status) + "</p>" +
+      (item.reviewNote ? '<p class="desc">审核备注：' + escapeHTML(item.reviewNote) + "</p>" : "") +
+      '<p class="meta">提交时间：' + escapeHTML(item.createdAt ? new Date(item.createdAt).toLocaleString("zh-CN") : "未记录") + "</p>" +
+      '<div class="card-actions">' +
+        (item.status === "pending" ?
+          '<button class="mini-btn" type="button" data-approve="' + item.id + '">通过</button>' +
+          '<button class="mini-btn" type="button" data-reject="' + item.id + '">拒绝</button>'
+        : "") +
+        '<button class="mini-btn" type="button" data-delete-sub="' + item.id + '">删除</button>' +
+      "</div>" +
+    "</div>"
+  )).join("");
+
+  grid.querySelectorAll("[data-approve]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = Number(btn.dataset.approve);
+      try {
+        await api(approveUrl + "/" + id + "/approve", { method: "POST" });
+        showToast("已通过审核");
+        await loadItems();
+        renderUserSubmissions(type);
+      } catch (e) { showToast(e.message, true); }
+    });
+  });
+  grid.querySelectorAll("[data-reject]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = Number(btn.dataset.reject);
+      try {
+        await api(approveUrl + "/" + id + "/reject", { method: "POST", body: JSON.stringify({ note: "" }) });
+        showToast("已拒绝");
+        await loadItems();
+        renderUserSubmissions(type);
+      } catch (e) { showToast(e.message, true); }
+    });
+  });
+  grid.querySelectorAll("[data-delete-sub]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = Number(btn.dataset.deleteSub);
+      try {
+        await api(approveUrl + "/" + id, { method: "DELETE" });
+        showToast("已删除");
+        await loadItems();
+        renderUserSubmissions(type);
+      } catch (e) { showToast(e.message, true); }
+    });
+  });
+}
+
 function renderGrid() {
   if (STATE.mainTab === "applications") {
     renderApplications();
+    return;
+  }
+  if (STATE.mainTab === "activityRegs") {
+    renderActivityRegs();
+    return;
+  }
+  if (STATE.mainTab === "deliveryRecords") {
+    renderDeliveryRecords();
+    return;
+  }
+  if (STATE.mainTab === "userEvents") {
+    renderUserSubmissions("event");
+    return;
+  }
+  if (STATE.mainTab === "userRecruits") {
+    renderUserSubmissions("recruit");
     return;
   }
   if (STATE.mainTab === "users") {
@@ -1161,7 +1340,7 @@ async function renderUI() {
   renderTabs();
   renderSubTabs();
   renderPanelHead();
-  const hideAddBtn = STATE.mainTab === "applications" || STATE.mainTab === "users" || STATE.mainTab === "userStats";
+  const hideAddBtn = STATE.mainTab === "applications" || STATE.mainTab === "users" || STATE.mainTab === "userStats" || STATE.mainTab === "activityRegs" || STATE.mainTab === "deliveryRecords" || STATE.mainTab === "userEvents" || STATE.mainTab === "userRecruits";
   document.getElementById("addBtn").classList.toggle("hidden", hideAddBtn);
   const grid = document.getElementById("grid");
   if (grid) grid.innerHTML = '<div style="padding:2rem;text-align:center;color:#94a3b8;">\u52a0\u8f7d\u4e2d\u2026</div>';
