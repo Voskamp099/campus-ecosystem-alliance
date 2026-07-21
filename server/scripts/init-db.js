@@ -57,11 +57,17 @@ const REQUIRED_COLUMNS = {
 
 async function runSchemaSql() {
   const sql = fs.readFileSync(SCHEMA_PATH, "utf-8");
-  // 按语句拆分（以分号结尾），跳过注释与空行
-  const statements = sql
+  // 先去掉行注释（-- 开头的行）和块注释，再按分号拆分
+  // 注意：不能简单用 startsWith("--") 过滤整条语句，因为建表语句前会有注释行
+  const cleanedSql = sql
+    .replace(/\/\*[\s\S]*?\*\//g, "") // 移除块注释
+    .split("\n")
+    .filter((line) => !line.trim().startsWith("--")) // 移除行注释
+    .join("\n");
+  const statements = cleanedSql
     .split(/;\s*(?:\n|$)/)
     .map((s) => s.trim())
-    .filter((s) => s && !s.startsWith("--") && !s.startsWith("/*"));
+    .filter((s) => s.length > 0);
   for (const stmt of statements) {
     await pool.query(stmt);
   }

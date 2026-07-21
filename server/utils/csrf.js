@@ -2,7 +2,20 @@ import { doubleCsrf } from "csrf-csrf";
 import { logger } from "./logger.js";
 
 const isProduction = process.env.NODE_ENV === "production";
-const csrfCookieName = isProduction
+
+// HTTPS 判定：
+//   1. 显式环境变量 HTTPS=true / FORCE_HTTPS=true 优先
+//   2. 生产环境默认假设部署在 HTTPS 反向代理后（Render/Vercel/Nginx 等都是如此）
+//   3. 开发环境默认 HTTP
+// 非 HTTPS 时不能使用 __Host- 前缀和 secure 标记，否则浏览器会静默丢弃 cookie，
+// 导致前端拿不到 CSRF token、所有 POST 请求返回 403。
+const isHttps =
+  process.env.HTTPS === "true" ||
+  process.env.FORCE_HTTPS === "true" ||
+  isProduction;
+
+// __Host- 前缀要求 secure=true 且 path=/ 且不带 domain，仅 HTTPS 环境可用
+const csrfCookieName = isHttps
   ? "__Host-psifi.x-csrf-token"
   : "psifi.x-csrf-token";
 
@@ -17,9 +30,10 @@ const { generateCsrfToken, validateRequest, doubleCsrfProtection } = doubleCsrf(
   },
   cookieName: csrfCookieName,
   cookieOptions: {
-    sameSite: "strict",
+    // lax 在同站 fetch 请求中会携带 cookie，比 strict 更兼容跨站跳转后首次访问
+    sameSite: "lax",
     path: "/",
-    secure: isProduction,
+    secure: isHttps,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 24 小时
   },

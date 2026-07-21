@@ -46,6 +46,22 @@ const CONFIG = {
     groupKey: null,
     fields: { meta: true, desc: false, link: false, items: false },
     placeholder: { title: "例如：北京大学", meta: "例如：综合院校" }
+  },
+  users: {
+    label: "用户列表",
+    desc: "查看所有注册用户信息，支持搜索过滤。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
+  },
+  userStats: {
+    label: "用户统计",
+    desc: "查看用户注册和登录的统计数据概览。",
+    sectionKey: null,
+    groupKey: null,
+    fields: { meta: false, desc: false, link: false, items: false },
+    placeholder: {}
   }
 };
 
@@ -180,7 +196,10 @@ const STATE = {
   directoryTab: "campus",
   editingIndex: -1,
   imageData: "",
-  items: []
+  items: [],
+  users: [],
+  userStats: null,
+  userSearchKeyword: ""
 };
 let csrfTokenCache = "";
 
@@ -366,6 +385,30 @@ async function localApi(path, options = {}) {
     const reordered = body.ids.map(id => itemMap.get(Number(id))).filter(Boolean);
     setLocalData(key, reordered);
     return { ok: true };
+  }
+
+  if (path === "/api/admin/users" && method === "GET") {
+    return { success: true, data: getLocalData("alliance_users_list") };
+  }
+
+  if (path === "/api/admin/users/stats" && method === "GET") {
+    const users = getLocalData("alliance_users_list");
+    const now = new Date();
+    const oneDayAgo = new Date(now - 24 * 60 * 60 * 1000);
+    const sevenDaysAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    return {
+      success: true,
+      data: {
+        total: users.length,
+        admin: users.filter(u => u.isAdmin).length,
+        active: users.filter(u => u.status === "active").length,
+        newToday: users.filter(u => u.createdAt && new Date(u.createdAt) > oneDayAgo).length,
+        newThisWeek: users.filter(u => u.createdAt && new Date(u.createdAt) > sevenDaysAgo).length,
+        newThisMonth: users.filter(u => u.createdAt && new Date(u.createdAt) > thirtyDaysAgo).length,
+        recentLogin: users.filter(u => u.lastLoginAt && new Date(u.lastLoginAt) > sevenDaysAgo).length
+      }
+    };
   }
 
   if (path === "/api/admin/export" && method === "GET") {
@@ -590,6 +633,16 @@ async function loadItems() {
     STATE.items = data.items || [];
     return;
   }
+  if (STATE.mainTab === "users") {
+    const data = await api("/api/admin/users", { method: "GET" });
+    STATE.users = data.data || data.items || [];
+    return;
+  }
+  if (STATE.mainTab === "userStats") {
+    const data = await api("/api/admin/users/stats", { method: "GET" });
+    STATE.userStats = data.data || data;
+    return;
+  }
   const { sectionKey, groupKey } = getActiveKeys();
   const query = new URLSearchParams({ sectionKey });
   if (groupKey) query.set("groupKey", groupKey);
@@ -664,6 +717,125 @@ function renderPanelHead() {
   document.getElementById("panelDesc").textContent = info.desc;
 }
 
+function renderUserStats() {
+  const grid = document.getElementById("grid");
+  const stats = STATE.userStats || {};
+  const cards = [
+    { label: "总用户数", value: stats.total || 0, icon: "\u{1F465}", color: "#60a5fa" },
+    { label: "管理员数", value: stats.admin || 0, icon: "\u{1F511}", color: "#fbbf24" },
+    { label: "活跃用户", value: stats.active || 0, icon: "\u{2705}", color: "#34d399" },
+    { label: "今日新增", value: stats.newToday || 0, icon: "\u{1F195}", color: "#f472b6" },
+    { label: "本周新增", value: stats.newThisWeek || 0, icon: "\u{1F4C5}", color: "#a78bfa" },
+    { label: "本月新增", value: stats.newThisMonth || 0, icon: "\u{1F4C6}", color: "#22d3ee" },
+    { label: "近期登录", value: stats.recentLogin || 0, icon: "\u{1F50D}", color: "#fb923c" }
+  ];
+  grid.innerHTML = '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;padding:8px 0;">' +
+    cards.map(c => (
+      '<div class="card" style="padding:24px;text-align:center;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,0.04);">' +
+        '<div style="font-size:36px;margin-bottom:12px;">' + c.icon + '</div>' +
+        '<div style="font-size:32px;font-weight:800;color:' + c.color + ';">' + escapeHTML(String(c.value)) + '</div>' +
+        '<div style="color:var(--text-muted);font-size:14px;margin-top:8px;">' + escapeHTML(c.label) + '</div>' +
+      '</div>'
+    )).join("") +
+    '</div>' +
+    '<div style="padding:16px 0;color:var(--text-muted);font-size:13px;text-align:center;">' +
+      '近期登录 = 最近 7 天内有登录记录的用户数；今日/本周/本月新增按注册时间统计。' +
+    '</div>';
+}
+
+function renderUsers() {
+  const grid = document.getElementById("grid");
+  const keyword = (STATE.userSearchKeyword || "").trim().toLowerCase();
+
+  let users = STATE.users || [];
+  if (keyword) {
+    users = users.filter(u =>
+      (u.email || "").toLowerCase().includes(keyword) ||
+      (u.nickname || "").toLowerCase().includes(keyword) ||
+      (u.phone || "").toLowerCase().includes(keyword) ||
+      (u.realName || "").toLowerCase().includes(keyword) ||
+      (u.orgName || "").toLowerCase().includes(keyword)
+    );
+  }
+
+  const searchBox =
+    '<div style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">' +
+      '<input type="text" id="userSearchInput" class="input" placeholder="搜索邮箱、昵称、手机号、姓名或单位..." value="' + escapeHTML(STATE.userSearchKeyword || "") + '" ' +
+        'style="flex:1;min-width:200px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,0.05);color:var(--text);font-size:14px;">' +
+      '<span style="color:var(--text-muted);font-size:13px;">共 ' + users.length + ' 位用户' + (keyword ? '（已过滤）' : '') + '</span>' +
+    '</div>';
+
+  if (!users.length) {
+    grid.innerHTML = searchBox +
+      '<div class="card empty"><div>' + (keyword ? '没有匹配的用户' : '暂时还没有注册用户') + '<br><span style="font-size:12px;">' + (keyword ? '试试其他关键词' : '用户通过 /register.html 注册后会出现在这里') + '</span></div></div>';
+    bindUserSearch();
+    return;
+  }
+
+  const rows = users.map(u => {
+    const verified = u.emailVerified ? '<span style="color:#34d399;">\u2713 已验证</span>' : '<span style="color:var(--text-muted);">\u2717 未验证</span>';
+    const status = u.status === "active"
+      ? '<span style="color:#34d399;">正常</span>'
+      : u.status === "banned"
+        ? '<span style="color:#fb7185;">封禁</span>'
+        : '<span style="color:#fbbf24;">停用</span>';
+    const adminBadge = u.isAdmin ? ' <span style="color:#fbbf24;font-weight:700;">\u{1F511} 管理员</span>' : '';
+    return '<tr>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + escapeHTML(String(u.id)) + '</td>' +
+      '<td style="padding:8px 12px;">' + escapeHTML(u.email || "-") + adminBadge + '</td>' +
+      '<td style="padding:8px 12px;">' + escapeHTML(u.nickname || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.phone || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.orgName || "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-soft);font-size:13px;">' + escapeHTML(u.orgRole || "-") + '</td>' +
+      '<td style="padding:8px 12px;font-size:12px;">' + verified + '</td>' +
+      '<td style="padding:8px 12px;font-size:12px;">' + status + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + (u.createdAt ? new Date(u.createdAt).toLocaleString("zh-CN") : "-") + '</td>' +
+      '<td style="padding:8px 12px;color:var(--text-muted);font-size:12px;">' + (u.lastLoginAt ? new Date(u.lastLoginAt).toLocaleString("zh-CN") : "从未登录") + '</td>' +
+    '</tr>';
+  }).join("");
+
+  grid.innerHTML = searchBox +
+    '<div style="overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.02);">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
+        '<thead>' +
+          '<tr style="border-bottom:1px solid var(--line);text-align:left;">' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">ID</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">邮箱</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">昵称</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">手机号</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">单位</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">角色</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">邮箱验证</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">状态</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">注册时间</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">最后登录</th>' +
+          '</tr>' +
+        '</thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+    '</div>';
+
+  bindUserSearch();
+}
+
+function bindUserSearch() {
+  const input = document.getElementById("userSearchInput");
+  if (!input) return;
+  let timer = null;
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      STATE.userSearchKeyword = input.value;
+      renderUsers();
+      const newInput = document.getElementById("userSearchInput");
+      if (newInput) {
+        newInput.focus();
+        newInput.setSelectionRange(newInput.value.length, newInput.value.length);
+      }
+    }, 200);
+  });
+}
+
 function renderApplications() {
   const grid = document.getElementById("grid");
 
@@ -726,6 +898,14 @@ function renderApplications() {
 function renderGrid() {
   if (STATE.mainTab === "applications") {
     renderApplications();
+    return;
+  }
+  if (STATE.mainTab === "users") {
+    renderUsers();
+    return;
+  }
+  if (STATE.mainTab === "userStats") {
+    renderUserStats();
     return;
   }
   const grid = document.getElementById("grid");
@@ -970,7 +1150,8 @@ async function renderUI() {
   renderTabs();
   renderSubTabs();
   renderPanelHead();
-  document.getElementById("addBtn").classList.toggle("hidden", STATE.mainTab === "applications");
+  const hideAddBtn = STATE.mainTab === "applications" || STATE.mainTab === "users" || STATE.mainTab === "userStats";
+  document.getElementById("addBtn").classList.toggle("hidden", hideAddBtn);
   await loadItems();
   renderGrid();
 }

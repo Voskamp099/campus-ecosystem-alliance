@@ -246,8 +246,8 @@
 
       <form id="loginForm">
         <div class="form-group">
-          <label for="email">账号</label>
-          <input type="text" id="email" name="email" placeholder="请输入邮箱或管理员账号" required>
+          <label for="email">邮箱或昵称</label>
+          <input type="text" id="email" name="email" placeholder="请输入邮箱或昵称" required>
           <div class="error-message" id="emailError"></div>
         </div>
 
@@ -398,9 +398,9 @@
           passwordError.classList.add('show');
           return false;
         }
-        if (value.length < 6) {
+        if (value.length < 8) {
           passwordInput.classList.add('input-error');
-          passwordError.textContent = '密码长度至少 6 位';
+          passwordError.textContent = '密码长度至少 8 位';
           passwordError.classList.add('show');
           return false;
         }

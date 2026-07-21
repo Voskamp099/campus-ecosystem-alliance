@@ -3,8 +3,7 @@
    包含：字体加载、设计变量、全局重置、通用组件
    ============================================================ */
 
-/* ── Google Fonts ────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700;900&display=swap");
+/* Google Fonts 通过 HTML <link> 加载，避免 CSS @import 在 CSP 下被拦截 */
 
 /* ── 设计变量（所有页面共享） ─────────────────────────────── */
 :root {

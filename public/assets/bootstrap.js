@@ -19,6 +19,26 @@
   }
 
   function initHead() {
+    // Google Fonts 通过 <link> 加载（而非 CSS @import），避免被 CSP 拦截
+    if (!document.querySelector('link[data-alliance-fonts="true"]')) {
+      var preconnect1 = document.createElement("link");
+      preconnect1.rel = "preconnect";
+      preconnect1.href = "https://fonts.googleapis.com";
+      preconnect1.setAttribute("data-alliance-fonts", "true");
+      document.head.appendChild(preconnect1);
+
+      var preconnect2 = document.createElement("link");
+      preconnect2.rel = "preconnect";
+      preconnect2.href = "https://fonts.gstatic.com";
+      preconnect2.crossOrigin = "";
+      document.head.appendChild(preconnect2);
+
+      var fontLink = document.createElement("link");
+      fontLink.rel = "stylesheet";
+      fontLink.href = "https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700;800&family=Noto+Serif+SC:wght@600;700;900&display=swap";
+      document.head.appendChild(fontLink);
+    }
+
     if (!document.querySelector('link[data-alliance-style="true"]')) {
       var stylesheet = document.createElement("link");
       stylesheet.rel = "stylesheet";
