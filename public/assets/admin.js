@@ -482,7 +482,18 @@ async function api(path, options = {}) {
       headers.set("X-CSRF-Token", csrfTokenCache);
     }
   }
-  const response = await fetch(path, { ...options, headers });
+  let response = await fetch(path, { ...options, headers });
+  // CSRF 403 时自动刷新 token 重试一次
+  if (response.status === 403) {
+    csrfTokenCache = "";
+    const csrfRes = await fetch("/api/csrf-token", { method: "GET" });
+    const csrfData = await csrfRes.json().catch(() => null);
+    csrfTokenCache = csrfData?.csrfToken || "";
+    if (csrfTokenCache) {
+      headers.set("X-CSRF-Token", csrfTokenCache);
+    }
+    response = await fetch(path, { ...options, headers });
+  }
   if (response.status === 401) {
     handleLogout();
     throw new Error("登录态已失效，请重新登录");

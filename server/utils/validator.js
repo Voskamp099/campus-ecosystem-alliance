@@ -112,7 +112,7 @@ export const validators = {
       .withMessage("昵称长度不能超过 100 个字符"),
 
     body("phone")
-      .optional()
+      .optional({ checkFalsy: true })
       .trim()
       .matches(/^1[3-9]\d{9}$/)
       .withMessage("请输入有效的手机号码"),

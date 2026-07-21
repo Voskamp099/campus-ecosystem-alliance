@@ -42,7 +42,7 @@ export const apiLimiter = rateLimit({
  */
 export const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 分钟
-  max: process.env.NODE_ENV === 'production' ? 5 : 50, // 开发环境放宽限制
+  max: process.env.NODE_ENV === 'production' ? 20 : 50, // 开发环境放宽限制
   message: {
     success: false,
     error: {
@@ -71,11 +71,11 @@ export const loginLimiter = rateLimit({
 /**
  * 注册接口限流
  * 开发环境：每个 IP 在 1 小时内最多 30 次注册尝试
- * 生产环境：每个 IP 在 1 小时内最多 3 次注册尝试
+ * 生产环境：每个 IP 在 1 小时内最多 10 次注册尝试
  */
 export const registerLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 小时
-  max: process.env.NODE_ENV === 'production' ? 3 : 30, // 开发环境放宽限制
+  max: process.env.NODE_ENV === 'production' ? 10 : 30, // 生产环境放宽到 10 次
   message: {
     success: false,
     error: {

@@ -535,22 +535,37 @@
         notice.className = 'notice';
 
         try {
-          const res = await fetch(`${API_BASE}/auth/register`, {
+          const requestBody = JSON.stringify({
+            realName,
+            nickname: nickname || realName,
+            email,
+            password,
+            phone,
+            orgName,
+            orgRole
+          });
+
+          let res = await fetch(`${API_BASE}/auth/register`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'X-CSRF-Token': await ensureCsrfToken()
             },
-            body: JSON.stringify({
-              realName,
-              nickname: nickname || realName,
-              email,
-              password,
-              phone,
-              orgName,
-              orgRole
-            })
+            body: requestBody
           });
+
+          // CSRF 403 时刷新 token 重试一次
+          if (res.status === 403) {
+            csrfToken = '';
+            res = await fetch(`${API_BASE}/auth/register`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': await ensureCsrfToken()
+              },
+              body: requestBody
+            });
+          }
           
           const data = await res.json();
           

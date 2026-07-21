@@ -26,7 +26,11 @@ const { generateCsrfToken, validateRequest, doubleCsrfProtection } = doubleCsrf(
     if (authHeader.startsWith("Bearer ")) {
       return authHeader.slice(7);
     }
-    return `${req.ip || ""}:${req.headers["user-agent"] || ""}`;
+    // 不使用 req.ip 作为 session 标识：
+    // Render 等反向代理环境下，同一个用户的多个请求可能来自不同出口 IP，
+    // 导致 HMAC 校验时 sessionIdentifier 不一致 → CSRF 403。
+    // User-Agent 在同一浏览器会话中是稳定的，足以作为未登录用户的标识。
+    return req.headers["user-agent"] || "unknown";
   },
   cookieName: csrfCookieName,
   cookieOptions: {
@@ -90,6 +94,7 @@ export function csrfErrorHandler(error, req, res, next) {
 
     res.status(403).json({
       success: false,
+      message: "安全验证失败，请刷新页面重试",
       error: {
         code: "CSRF_TOKEN_INVALID",
         message: "安全验证失败，请刷新页面重试",

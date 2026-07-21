@@ -476,14 +476,29 @@
             return;
           }
 
-          const res = await fetch(`${API_BASE}/auth/login`, {
+          const requestBody = JSON.stringify({ email, password });
+
+          let res = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
               'X-CSRF-Token': await ensureCsrfToken()
             },
-            body: JSON.stringify({ email, password })
+            body: requestBody
           });
+
+          // CSRF 403 时刷新 token 重试一次
+          if (res.status === 403) {
+            csrfToken = '';
+            res = await fetch(`${API_BASE}/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-Token': await ensureCsrfToken()
+              },
+              body: requestBody
+            });
+          }
           
           const data = await res.json();
           

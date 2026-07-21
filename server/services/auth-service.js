@@ -64,7 +64,7 @@ export async function findUserByEmail(email) {
       const [rows] = await pool.query(
         `SELECT id, email, password_hash, nickname, avatar_url, phone,
                 real_name, org_name, org_role, email_verified,
-                last_login_at, status, created_at
+                last_login_at, status, created_at, is_admin
          FROM users WHERE email = ? AND status != 'banned'`,
         [normalizedEmail]
       );
@@ -144,22 +144,34 @@ export async function createUser(payload) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) throw new Error("邮箱格式不正确");
   if (!password || password.length < 8) throw new Error("密码至少需要8位");
 
-  const existing = await findUserByEmail(normalizedEmail);
+  let existing = null;
+  try {
+    existing = await findUserByEmail(normalizedEmail);
+  } catch (dbErr) {
+    // 数据库查询失败（如表不存在），降级到 JSON 模式
+    logger.warn({ err: dbErr }, "findUserByEmail 失败，降级到 JSON 模式");
+  }
   if (existing) throw new Error("该邮箱已被注册");
 
   const passwordHash = await hashPassword(password);
   const now = new Date().toISOString();
 
   if (await isDatabaseAvailable()) {
-    const verificationToken = generateToken();
-    const [result] = await pool.query(
-      `INSERT INTO users
-       (email, password_hash, nickname, phone, real_name, org_name, org_role, verification_token, email_verified, is_admin)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [normalizedEmail, passwordHash, nickname, phone, realName, orgName, orgRole, verificationToken, false, isAdmin ? 1 : 0]
-    );
-    const user = await findUserById(result.insertId);
-    return { user, verificationToken };
+    try {
+      const verificationToken = generateToken();
+      const [result] = await pool.query(
+        `INSERT INTO users
+         (email, password_hash, nickname, phone, real_name, org_name, org_role, verification_token, email_verified, is_admin)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [normalizedEmail, passwordHash, nickname, phone, realName, orgName, orgRole, verificationToken, false, isAdmin ? 1 : 0]
+      );
+      const user = await findUserById(result.insertId);
+      return { user, verificationToken };
+    } catch (insertErr) {
+      // INSERT 失败（如表不存在），降级到 JSON 模式
+      logger.warn({ err: insertErr }, "INSERT users 失败，降级到 JSON 模式");
+      invalidateDbCache();
+    }
   }
 
   // 降级：JSON 文件
@@ -187,7 +199,13 @@ export async function createUser(payload) {
 }
 
 export async function validateLogin(identifier, password) {
-  const user = await findUserForLogin(identifier);
+  let user = null;
+  try {
+    user = await findUserForLogin(identifier);
+  } catch (dbErr) {
+    // 数据库查询失败，降级到 JSON 模式
+    logger.warn({ err: dbErr }, "findUserForLogin 失败，降级到 JSON 模式");
+  }
 
   if (!user) throw new Error("邮箱或密码错误");
 
@@ -196,10 +214,14 @@ export async function validateLogin(identifier, password) {
 
   // 更新登录信息
   if (await isDatabaseAvailable()) {
-    await pool.query(
-      `UPDATE users SET last_login_at = NOW(), login_count = login_count + 1 WHERE id = ?`,
-      [user.id]
-    );
+    try {
+      await pool.query(
+        `UPDATE users SET last_login_at = NOW(), login_count = login_count + 1 WHERE id = ?`,
+        [user.id]
+      );
+    } catch (dbErr) {
+      logger.warn({ err: dbErr }, "更新登录信息失败，忽略");
+    }
   } else {
     // JSON 模式：更新 last_login_at
     const users = loadUsers();
