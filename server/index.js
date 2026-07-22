@@ -106,11 +106,21 @@ app.use("/uploads", express.static(path.join(rootDir, "public/uploads"), {
 }));
 
 // 站点根目录：public/ 同时承载页面 HTML 与静态资源（favicon、assets 等）
-app.use(express.static(path.join(rootDir, "public"), { 
+// 注意：不能对 HTML 设置 maxAge，否则浏览器缓存旧版页面（如标题字号修改后返回首页仍看到旧版）。
+// express.static 的 maxAge 会生成 Cache-Control: public, max-age=...，对 .html 文件会覆盖下方 no-cache 头。
+// 解决方式：用 setHeaders 回调按扩展名区分，HTML 不缓存，其他资源保留 1 天缓存。
+app.use(express.static(path.join(rootDir, "public"), {
   index: false,
   etag: true,
   lastModified: true,
-  maxAge: '1d'
+  maxAge: '1d',
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+    }
+  }
 }));
 
 // ── 静态资源缓存头 ────────────────────────────────────────

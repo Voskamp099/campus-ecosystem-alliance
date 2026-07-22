@@ -884,9 +884,9 @@ function renderUserStats() {
     { label: "本月新增", value: stats.newThisMonth || 0, icon: "\u{1F4C6}", color: "#22d3ee" },
     { label: "近期登录", value: stats.recentLogin || 0, icon: "\u{1F50D}", color: "#fb923c" }
   ];
-  grid.innerHTML = '<div class="stats-grid" style="display:flex;gap:14px;flex-wrap:nowrap;overflow-x:auto;padding:8px 0;">' +
+  grid.innerHTML = '<div class="stats-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;padding:8px 0;">' +
     cards.map(c => (
-      '<div class="card" style="flex:1 1 0;min-width:128px;padding:18px 12px;text-align:center;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,0.04);">' +
+      '<div class="card" style="padding:18px 12px;text-align:center;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,0.04);">' +
         '<div style="font-size:36px;margin-bottom:12px;">' + c.icon + '</div>' +
         '<div style="font-size:32px;font-weight:800;color:' + c.color + ';">' + escapeHTML(String(c.value)) + '</div>' +
         '<div style="color:var(--text-muted);font-size:14px;margin-top:8px;">' + escapeHTML(c.label) + '</div>' +
@@ -950,23 +950,20 @@ function renderUsers() {
   }).join("");
 
   grid.innerHTML = searchBox +
-    '<div style="border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.02);overflow:hidden;">' +
-      '<table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;">' +
-        '<colgroup>' +
-          '<col style="width:5%"><col style="width:18%"><col style="width:11%"><col style="width:11%"><col style="width:13%"><col style="width:9%"><col style="width:7%"><col style="width:7%"><col style="width:9%"><col style="width:10%">' +
-        '</colgroup>' +
+    '<div style="border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,0.02);overflow:auto;">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:13px;">' +
         '<thead>' +
           '<tr style="border-bottom:1px solid var(--line);text-align:left;">' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">ID</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">邮箱</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">昵称</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">手机号</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">单位</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">角色</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">邮箱验证</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">状态</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">注册时间</th>' +
-            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;">最后登录</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">ID</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">邮箱</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">昵称</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">手机号</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">单位</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">角色</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">邮箱验证</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">状态</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">注册时间</th>' +
+            '<th style="padding:10px 12px;color:var(--text-muted);font-size:12px;white-space:nowrap;">最后登录</th>' +
           '</tr>' +
         '</thead>' +
         '<tbody>' + rows + '</tbody>' +
