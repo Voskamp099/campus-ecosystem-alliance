@@ -294,13 +294,20 @@ app.use(sentryErrorHandler());
 app.use(errorHandler);
 
 // 启动时初始化/自愈数据库结构（MySQL 不可用时仅告警，不阻断启动，JSON 降级仍可用）
-initDatabase()
-  .then(() => logger.info("数据库结构已就绪"))
-  .catch((err) => logger.warn({ err }, "数据库初始化跳过（MySQL 不可用，将使用 JSON 降级）"))
-  .finally(() => {
-    app.listen(config.port, () => {
-      logger.info(`Alliance website server running at http://localhost:${config.port}`);
-      logger.info(`Environment: ${config.env}`);
-      logger.info(`Database: ${config.mysql.host}:${config.mysql.port}/${config.mysql.database}`);
+// 导出 app 供 supertest 集成测试直接引入，测试时不占用任何端口
+export default app;
+
+// 仅在非测试环境下启动监听并初始化数据库结构
+// （测试通过 jest.setup.js 注入 NODE_ENV=test，走 JSON 降级存储）
+if (config.env !== "test") {
+  initDatabase()
+    .then(() => logger.info("数据库结构已就绪"))
+    .catch((err) => logger.warn({ err }, "数据库初始化跳过（MySQL 不可用，将使用 JSON 降级）"))
+    .finally(() => {
+      app.listen(config.port, () => {
+        logger.info(`Alliance website server running at http://localhost:${config.port}`);
+        logger.info(`Environment: ${config.env}`);
+        logger.info(`Database: ${config.mysql.host}:${config.mysql.port}/${config.mysql.database}`);
+      });
     });
-  });
+}

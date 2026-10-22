@@ -10,7 +10,8 @@ import { logger } from '../utils/logger.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.resolve(__dirname, '..', '..');
-const DATA_DIR = path.join(ROOT_DIR, 'data');
+// 测试通过 DATA_DIR 指向临时目录，避免写入真实业务数据
+const DATA_DIR = process.env.DATA_DIR || path.join(ROOT_DIR, 'data');
 
 // 确保数据目录存在
 if (!fs.existsSync(DATA_DIR)) {

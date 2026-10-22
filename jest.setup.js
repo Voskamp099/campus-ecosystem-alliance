@@ -16,6 +16,15 @@ process.env.MYSQL_USER = "root";
 process.env.MYSQL_PASSWORD = "";
 process.env.MYSQL_DATABASE = "alliance_website_test";
 
+// JSON 降级存储指向临时目录：MySQL 不可用时服务会退到 data/ 下的 JSON 文件，
+// 不隔离的话跑一次测试就会往真实业务数据里写测试用户。
+// 目录名带上进程号，每次跑测试都是全新的一份，用例之间互不干扰。
+import fs from "node:fs";
+
+const TEST_DATA_DIR = `/tmp/alliance-website-test-${process.pid}`;
+fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+process.env.DATA_DIR = TEST_DATA_DIR;
+
 // 增加测试超时时间
 jest.setTimeout(10000);
 
@@ -24,6 +33,13 @@ afterAll(async () => {
   // 清理自定义资源
   if (global.__TEST_CLEANUP__) {
     await global.__TEST_CLEANUP__();
+  }
+
+  // 删除本次测试的临时数据目录
+  try {
+    fs.rmSync(TEST_DATA_DIR, { recursive: true, force: true });
+  } catch (e) {
+    // 目录不存在时忽略
   }
 
   // 关闭 MySQL 连接池 + 清除 setInterval（db.js 模块加载时即创建）
