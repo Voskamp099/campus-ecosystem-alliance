@@ -14,8 +14,8 @@
 
 **前端**
 - HTML5 + CSS3 + JavaScript (ES6+)
-- Tailwind CSS（UI框架）
-- 原生组件（无框架依赖）
+- 原生 CSS（assets/styles.css 公共样式层 + assets/polish.css 视觉打磨层）
+- 原生组件（无框架依赖、无构建步骤）
 
 **安全**
 - Helmet（安全头）

@@ -247,8 +247,8 @@ function applyModeUI() {
     modeBadge.textContent = "本地模式 · 浏览器存储";
     modeBadge.classList.add("local");
     modeBadge.classList.remove("live");
-    modeNotice.innerHTML = "<strong>当前是本地模式。</strong> 你的修改会保存在当前浏览器 localStorage，不会同步到服务器。默认超级管理员账号可使用 <code>gly</code>，默认测试密码为 <code>123456</code>。";
-    loginUsername.placeholder = "本地模式默认账号：gly";
+    modeNotice.innerHTML = "<strong>当前是本地模式。</strong> 你的修改会保存在当前浏览器 localStorage，不会同步到服务器。默认超级管理员账号为 <code>admin</code>，默认测试密码为 <code>123456</code>。";
+    loginUsername.placeholder = "本地模式默认账号：admin";
     loginPassword.placeholder = "本地模式默认密码：123456";
     return;
   }

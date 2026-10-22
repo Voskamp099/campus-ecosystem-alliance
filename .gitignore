@@ -57,3 +57,6 @@ db_backup_*.sql
 
 # Obsidian 本地编辑器状态，不进版本库
 .obsidian/
+
+# 工具产生的临时目录
+.dumate/
