@@ -9,6 +9,10 @@ requests actually get matched instead of sitting in a WeChat group.
 
 [![CI](https://github.com/Voskamp099/campus-ecosystem-alliance/actions/workflows/ci.yml/badge.svg)](https://github.com/Voskamp099/campus-ecosystem-alliance/actions/workflows/ci.yml)
 
+> **About this repository** — published as a portfolio artefact so the engineering can be
+> reviewed. It is not an open-source release and carries no licence; see [NOTICE](NOTICE).
+> Sample data has been redacted and the commit history is preserved as written.
+
 ![Homepage](docs/screenshots/home-hero.jpg)
 
 <p align="center">
@@ -180,4 +184,5 @@ The API is documented with Swagger at `/api-docs` while the server is running.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+Not open source. See [NOTICE](NOTICE) — no permission is granted to copy, modify or
+redistribute this code.
