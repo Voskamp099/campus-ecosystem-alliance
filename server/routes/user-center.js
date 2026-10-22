@@ -160,11 +160,11 @@ router.get("/user/profile", verifyToken, async (req, res, next) => {
 
 
 // 旧路由（手机号查询，兼容旧版，标记 deprecated）
-router.get("/user/records", async (req, res, next) => {
+router.get("/user/records", verifyToken, async (req, res, next) => {
   try {
-    const { phone } = req.query;
-    if (!phone) return res.status(400).json({ message: "请提供手机号" });
-    const data = await getUserAllRecords(phone);
+    // 记录只按令牌里的 userId 查, 不接受调用方指定手机号,
+    // 否则知道别人手机号就能查到别人的对接申请和报名记录。
+    const data = await getUserAllRecords(null, req.user.userId);
     res.json(data);
   } catch (error) {
     next(error);
@@ -202,11 +202,9 @@ router.get("/user-center/deliveries", verifyToken, async (req, res, next) => {
 });
 
 // 旧路由（手机号查询，标记 deprecated）
-router.get("/user/directory-applications", async (req, res, next) => {
+router.get("/user/directory-applications", verifyToken, async (req, res, next) => {
   try {
-    const { phone } = req.query;
-    if (!phone) return res.status(400).json({ message: "请提供手机号" });
-    const records = await getUserDirectoryApplications(phone);
+    const records = await getUserDirectoryApplications(null, req.user.userId);
     res.json({ records });
   } catch (error) {
     next(error);
@@ -214,11 +212,9 @@ router.get("/user/directory-applications", async (req, res, next) => {
 });
 
 // 旧路由
-router.get("/user/activity-registrations", async (req, res, next) => {
+router.get("/user/activity-registrations", verifyToken, async (req, res, next) => {
   try {
-    const { phone } = req.query;
-    if (!phone) return res.status(400).json({ message: "请提供手机号" });
-    const records = await getUserActivityRegistrations(phone);
+    const records = await getUserActivityRegistrations(null, req.user.userId);
     res.json({ records });
   } catch (error) {
     next(error);
@@ -226,11 +222,9 @@ router.get("/user/activity-registrations", async (req, res, next) => {
 });
 
 // 旧路由
-router.get("/user/delivery-records", async (req, res, next) => {
+router.get("/user/delivery-records", verifyToken, async (req, res, next) => {
   try {
-    const { phone } = req.query;
-    if (!phone) return res.status(400).json({ message: "请提供手机号" });
-    const records = await getUserDeliveryRecords(phone);
+    const records = await getUserDeliveryRecords(null, req.user.userId);
     res.json({ records });
   } catch (error) {
     next(error);
