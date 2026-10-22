@@ -54,3 +54,6 @@ db_backup_*.sql
 *.pem
 *.key
 *.crt
+
+# Obsidian 本地编辑器状态，不进版本库
+.obsidian/

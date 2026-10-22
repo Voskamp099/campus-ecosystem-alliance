@@ -1,0 +1,285 @@
+/* ============================================================
+   alliance-website — 视觉打磨层
+   加载在 index.html 内联样式之后，因此同名选择器以本文件为准。
+   目标：修掉空占位框、章节标题被导航压住、跑马灯切字，
+   同时给整页补上层次、暖色强调和颗粒质感。
+   ============================================================ */
+
+/* ── 1. 底噪：大面积渐变会有色阶断层，叠一层极淡的噪点压掉 ── */
+body {
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.05'/></svg>"),
+    radial-gradient(circle at 12% -6%, rgba(37, 99, 235, 0.28), transparent 34%),
+    radial-gradient(circle at 88% 4%, rgba(251, 191, 36, 0.10), transparent 28%),
+    radial-gradient(circle at 50% 108%, rgba(14, 165, 233, 0.10), transparent 42%),
+    linear-gradient(180deg, #061223 0%, #091a33 42%, #07131f 100%);
+  background-attachment: fixed;
+}
+
+/* ── 2. 粘性导航压住章节标题：给锚点留出导航高度 ── */
+html {
+  scroll-padding-top: 96px;
+}
+
+.section,
+.hero {
+  scroll-margin-top: 96px;
+}
+
+/* ── 3. 章节标题层级：给英文小标一条金色短线 ── */
+.section-header {
+  position: relative;
+}
+
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--gold);
+  letter-spacing: 2.4px;
+}
+
+.section-tag::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--gold), rgba(251, 191, 36, 0));
+}
+
+.section-title {
+  letter-spacing: -0.01em;
+  background: linear-gradient(180deg, #ffffff 30%, rgba(219, 234, 254, 0.88) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ── 4. 首屏右侧：空占位框改成有内容的排版面板 ── */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  border-radius: 28px;
+  border: 1px solid rgba(147, 197, 253, 0.16);
+  background:
+    linear-gradient(165deg, rgba(30, 58, 102, 0.72) 0%, rgba(9, 26, 51, 0.86) 52%, rgba(6, 18, 35, 0.94) 100%);
+  box-shadow:
+    0 40px 90px -30px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(120% 80% at 100% 0%, rgba(251, 191, 36, 0.13), transparent 58%);
+}
+
+.hero-card-grid {
+  height: 100%;
+  align-content: stretch;
+}
+
+.hero-media-stage {
+  width: 100%;
+  aspect-ratio: auto;
+  min-height: 224px;
+  flex: 1;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  place-items: stretch;
+}
+
+/* 没有任何上传图片时，用文字幻灯片撑起这个区域 */
+.hero-media-placeholder {
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  justify-content: center;
+  align-items: stretch;
+  text-align: left;
+  gap: 0;
+}
+
+.hero-media-badge {
+  display: none;
+}
+
+.hero-slide-text {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 26px 30px 48px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.hero-slide-text.active {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hero-slide-kicker {
+  align-self: flex-start;
+  padding: 5px 11px;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 191, 36, 0.34);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fcd34d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+}
+
+.hero-slide-title {
+  margin: 0;
+  font-family: "Noto Serif SC", serif;
+  font-size: 25px;
+  line-height: 1.32;
+  color: #ffffff;
+}
+
+.hero-slide-desc {
+  margin: 0;
+  max-width: 30ch;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.66;
+}
+
+.hero-card-panel {
+  position: relative;
+  padding: 26px 32px 30px;
+  background: linear-gradient(180deg, rgba(3, 12, 26, 0) 0%, rgba(3, 12, 26, 0.42) 70%);
+}
+
+.hero-card-kicker {
+  color: var(--gold);
+  letter-spacing: 2.2px;
+}
+
+.hero-card-title {
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+/* ── 5. 跑马灯：两端淡出范围加大，不再把 chip 切成半个字 ── */
+.hero-marquee {
+  gap: 22px;
+}
+
+.hero-marquee-track {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 22%, #000 78%, transparent 100%);
+  padding: 6px 0;
+}
+
+.partner-chip {
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
+}
+
+.partner-chip:hover {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(147, 197, 253, 0.34);
+  transform: translateY(-2px);
+}
+
+/* ── 6. 卡片：悬停时抬起来并提亮边框 ── */
+.cat-card,
+.directory-card,
+.recruit-card,
+.event-card,
+.logo-card {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cat-card:hover,
+.directory-card:hover,
+.recruit-card:hover,
+.event-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(147, 197, 253, 0.38);
+  box-shadow: 0 26px 54px -26px rgba(3, 12, 26, 0.9);
+}
+
+/* ── 7. 主按钮：悬停时有一层克制的光 ── */
+.btn-primary {
+  position: relative;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease;
+  box-shadow: 0 14px 30px -14px rgba(37, 99, 235, 0.85);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 20px 40px -16px rgba(37, 99, 235, 0.95);
+}
+
+.btn-primary svg {
+  transition: transform 0.25s ease;
+}
+
+.btn-primary:hover svg {
+  transform: translateX(3px);
+}
+
+/* ── 8. 可聚焦元素补上键盘焦点环 ── */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ── 9. 底部三栏：拆成三格，中间加竖线 ── */
+.trust-bar {
+  border-radius: 22px;
+  border: 1px solid rgba(147, 197, 253, 0.14);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+}
+
+.trust-item + .trust-item {
+  position: relative;
+}
+
+.trust-item + .trust-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%;
+  bottom: 12%;
+  width: 1px;
+  background: linear-gradient(180deg, transparent, rgba(147, 197, 253, 0.22), transparent);
+}
+
+.trust-item strong {
+  color: #ffffff;
+}
+
+@media (max-width: 720px) {
+  .trust-item + .trust-item::before {
+    display: none;
+  }
+}
+
+/* ── 10. 首屏小徽章：金线描边，跟品牌色呼应 ── */
+.hero-badge {
+  border-color: rgba(251, 191, 36, 0.22);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.hero-badge-dot {
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.16);
+}

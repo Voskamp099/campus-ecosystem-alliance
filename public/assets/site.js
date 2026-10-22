@@ -274,26 +274,43 @@ function fixLocalAssetPaths() {
 }
 
 function renderHeroVisual() {
-  const data = getContentData("alliance_content_hero_carousel").filter(item => item && item.image);
+  const allItems = getContentData("alliance_content_hero_carousel").filter(Boolean);
+  const withImage = allItems.filter(item => item && item.image);
   const placeholder = document.getElementById("heroMediaPlaceholder");
   const dots = document.getElementById("heroCarouselDots");
   if (!placeholder) return;
 
-  if (!data.length) {
+  // 后台还没上传图片时，不留一个空的 16:9 占位框,
+  // 改成用条目的标题和描述做文字幻灯片, 页面看起来是设计过的而不是坏的。
+  const textItems = allItems.filter(item => item && !item.image && (item.title || item.meta || item.desc));
+  const useTextSlides = !withImage.length && textItems.length > 0;
+
+  if (!withImage.length && !useTextSlides) {
     placeholder.innerHTML = '<div class="hero-media-badge">16:9</div>';
     if (dots) dots.innerHTML = "";
     return;
   }
 
-  placeholder.innerHTML = data.map((item, index) => (
-    '<a class="hero-carousel-slide ' + (index === 0 ? "active" : "") + '" href="' + escapeHTML(item.link || "#events") + '" target="' + ((item.link || "").startsWith("http") ? "_blank" : "_self") + '">' +
-      '<img class="hero-media-image" src="' + escapeHTML(item.image) + '" alt="' + escapeHTML(item.title || "活动照片") + '" loading="lazy" decoding="async">' +
-      '<div class="hero-carousel-caption">' +
-        '<strong>' + escapeHTML(item.title || "活动照片") + '</strong>' +
-        (item.meta ? '<span>' + escapeHTML(item.meta) + '</span>' : "") +
-      "</div>" +
-    "</a>"
-  )).join("");
+  if (useTextSlides) {
+    placeholder.innerHTML = textItems.map((item, index) => (
+      '<div class="hero-slide-text ' + (index === 0 ? "active" : "") + '">' +
+        (item.meta ? '<span class="hero-slide-kicker">' + escapeHTML(item.meta) + '</span>' : "") +
+        (item.title ? '<h3 class="hero-slide-title">' + escapeHTML(item.title) + '</h3>' : "") +
+        (item.desc ? '<p class="hero-slide-desc">' + escapeHTML(item.desc) + '</p>' : "") +
+      "</div>"
+    )).join("");
+  } else {
+    placeholder.innerHTML = withImage.map((item, index) => (
+      '<a class="hero-carousel-slide ' + (index === 0 ? "active" : "") + '" href="' + escapeHTML(item.link || "#events") + '" target="' + ((item.link || "").startsWith("http") ? "_blank" : "_self") + '">' +
+        '<img class="hero-media-image" src="' + escapeHTML(item.image) + '" alt="' + escapeHTML(item.title || "活动照片") + '" loading="lazy" decoding="async">' +
+        '<div class="hero-carousel-caption">' +
+          '<strong>' + escapeHTML(item.title || "活动照片") + '</strong>' +
+          (item.meta ? '<span>' + escapeHTML(item.meta) + '</span>' : "") +
+        "</div>" +
+      "</a>"
+    )).join("");
+  }
+  const data = withImage.length ? withImage : textItems;
 
   if (dots) {
     dots.innerHTML = data.map((_, index) => (
@@ -301,7 +318,7 @@ function renderHeroVisual() {
     )).join("");
   }
 
-  const slides = placeholder.querySelectorAll(".hero-carousel-slide");
+  const slides = placeholder.querySelectorAll(".hero-carousel-slide, .hero-slide-text");
   const dotButtons = dots ? dots.querySelectorAll(".hero-carousel-dot") : [];
   let activeIndex = 0;
 

@@ -49,6 +49,19 @@
       document.head.appendChild(stylesheet);
     }
 
+    // 视觉打磨层：只有页面用 <meta name="alliance-polish" content="1"> 声明时才加载。
+    // 必须排在 styles.css 之后——styles.css 是运行时注入的，
+    // 如果打磨层先于它出现在文档顺序里，同优先级时 styles.css 会反过来覆盖打磨层。
+    var polishMeta = document.querySelector('meta[name="alliance-polish"]');
+    if (polishMeta && polishMeta.getAttribute("content") === "1"
+        && !document.querySelector('link[data-alliance-polish="true"]')) {
+      var polishLink = document.createElement("link");
+      polishLink.rel = "stylesheet";
+      polishLink.href = getAssetPath("assets/polish.css") + "?v=202610221545";
+      polishLink.setAttribute("data-alliance-polish", "true");
+      document.head.appendChild(polishLink);
+    }
+
     if (!document.querySelector('link[data-alliance-favicon="true"]')) {
       [
         { rel: "icon", type: "image/svg+xml", href: "favicon.svg" },

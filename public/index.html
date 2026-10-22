@@ -11,6 +11,8 @@
   <meta property="og:type" content="website">
   <meta property="og:locale" content="zh_CN">
   <meta name="theme-color" content="#091a33">
+  <!-- 启用视觉打磨层（由 bootstrap 在 styles.css 之后加载） -->
+  <meta name="alliance-polish" content="1">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <script>
     (function () {
@@ -2322,8 +2324,14 @@
   </div>
 </div>
 
-<!-- 搜索功能脚本 -->
-<script src="/assets/search.js"></script>
+<!-- 搜索功能脚本：走 bootstrap 加载器，file:// 预览时不会 404 -->
+<script>
+  if (window.AllianceBootstrap && window.AllianceBootstrap.loadScript) {
+    window.AllianceBootstrap.loadScript("assets/search.js");
+  } else {
+    document.write('<script src="assets/search.js"><\/script>');
+  }
+</script>
 
 <!-- 法律条款弹窗初始化 -->
 <script>
