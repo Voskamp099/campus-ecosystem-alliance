@@ -4,8 +4,7 @@
 companies and government partners, so that internships, events and collaboration
 requests actually get matched instead of sitting in a WeChat group.
 
-连接高校、企业与政府伙伴的生态对接平台：聚合三方资源，提供实习实践、活动报名、
-资源对接与后台审核流程。
+[English](README.md) · [简体中文](README.zh-CN.md)
 
 [![CI](https://github.com/Voskamp099/campus-ecosystem-alliance/actions/workflows/ci.yml/badge.svg)](https://github.com/Voskamp099/campus-ecosystem-alliance/actions/workflows/ci.yml)
 
@@ -16,8 +15,8 @@ requests actually get matched instead of sitting in a WeChat group.
 ![Homepage](docs/screenshots/home-hero.jpg)
 
 <p align="center">
-  <img src="docs/screenshots/home-directory.jpg" width="49%" alt="生态对接名录" />
-  <img src="docs/screenshots/admin-dashboard.jpg" width="49%" alt="后台控制台" />
+  <img src="docs/screenshots/home-directory.jpg" width="49%" alt="Directory of ecosystem partners" />
+  <img src="docs/screenshots/admin-dashboard.jpg" width="49%" alt="Admin console" />
 </p>
 
 ---
@@ -34,6 +33,8 @@ requests actually get matched instead of sitting in a WeChat group.
 | 个人中心 Personal centre | Applications, event registrations and job submissions in one place |
 | 后台管理 Admin | Full CRUD and ordering for every content section, plus moderation, user list, statistics and an audit log |
 
+The interface is Chinese; the module names above are the real names used in the UI.
+
 ## Engineering highlights
 
 ### Degrades instead of failing
@@ -41,10 +42,10 @@ requests actually get matched instead of sitting in a WeChat group.
 The whole data layer sits behind one interface: `isDatabaseAvailable()`. If MySQL is
 unreachable, reads fall back to a JSON file store and writes report `503` rather than
 crashing the process. The service still boots, still serves the site, and the admin
-console still works. This is not theoretical — the app was built and tested with MySQL
-down for most of its life.
+console still works.
 
-MySQL 不可用时服务自动降级到 JSON 文件存储，站点照常可用，不会整体崩溃。
+This is not theoretical. The application was built and tested with MySQL down for most
+of its life, and the fallback path is what made local development possible at all.
 
 ### Security model
 
@@ -59,7 +60,7 @@ Every write goes through a fixed chain, and each link is a deliberate choice:
 | Transport | `helmet` security headers, `cors` with an allowlist, `csrf-csrf` |
 | Abuse | Per-route rate limiters, global API limiter, `trust proxy` so `req.ip` is correct behind Nginx |
 | Passwords | bcrypt with cost 12; hashes are never logged |
-| Headers | Pino structured logs, Sentry error tracking, `/health` `/ready` `/live` probes |
+| Observability | Pino structured logs, Sentry error tracking, `/health` `/ready` `/live` probes |
 
 ### One bug worth calling out
 
@@ -69,9 +70,9 @@ records. No authentication was required. Anyone who guessed a phone number could
 another person's records — including their name, organisation and contact details.
 
 They now require a JWT and resolve the identity from the token, matching the
-`/api/user-center/*` routes sitting next to them. `__tests__/integration/user-records-auth.test.js`
-pins the behaviour down, including the case where a valid token is combined with
-someone else's phone number in the query.
+`/api/user-center/*` routes sitting next to them.
+`__tests__/integration/user-records-auth.test.js` pins the behaviour down, including
+the case where a valid token is combined with someone else's phone number in the query.
 
 ### Testing
 
@@ -84,8 +85,11 @@ Tests:       64 passed, 64 total
 ```
 
 Coverage is 91% on `utils/csrf.js`, 93% on `utils/validator.js` and 87% on
-`server/auth.js`. The suite is written so a failure names the guarantee that broke
-("写操作不带 CSRF token 时被拒绝") rather than a line number.
+`server/auth.js`.
+
+Test names are written as the guarantee they protect, so a failure tells you what broke
+rather than which line broke. For example: `写操作不带 CSRF token 时被拒绝` — "a write
+without a CSRF token is rejected".
 
 ## Architecture
 
